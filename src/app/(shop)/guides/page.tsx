@@ -10,7 +10,7 @@ export const metadata = {
 export default function Guides() {
   return (
     <div className="mx-auto max-w-3xl px-5 py-12">
-      <h1 className="text-5xl font-extrabold">Buying guides</h1>
+      <h1 className="text-5xl">Buying guides</h1>
       <ul className="mt-10 space-y-8">
         {GUIDES.map((g) => (
           <li key={g.slug}>
