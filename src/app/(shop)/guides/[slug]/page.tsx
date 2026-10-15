@@ -23,12 +23,12 @@ export default async function GuidePage({ params }: { params: { slug: string } }
       }} />
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Guides", path: "/guides" }, { name: g.title, path: `/guides/${g.slug}` }])} />
       <nav aria-label="Breadcrumb" className="text-sm text-ink/60"><Link href="/">Home</Link> / <Link href="/guides">Guides</Link></nav>
-      <h1 className="mt-2 text-4xl font-extrabold leading-tight sm:text-5xl">{g.title}</h1>
+      <h1 className="mt-2 text-4xl leading-tight sm:text-5xl">{g.title}</h1>
       <div className="mt-8 space-y-5 text-lg leading-relaxed">
         {g.blocks.map((b, i) => b.h2 ? <h2 key={i} className="pt-4 text-2xl font-bold">{b.h2}</h2> : <p key={i}>{b.p}</p>)}
       </div>
       {products.length > 0 && (
-        <aside className="mt-12 rounded-3xl bg-meadow p-6">
+        <aside className="mt-12 rounded-lg bg-meadow p-6">
           <h2 className="text-xl font-bold">Products mentioned</h2>
           <ul className="mt-3 space-y-2">
             {products.map((p) => <li key={p.id}><Link href={`/products/${p.slug}`} className="underline">{p.title}</Link></li>)}
