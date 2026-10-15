@@ -65,6 +65,8 @@ model Order {
   subtotalCents   Int
   costCents       Int
   stripeSessionId String?       @unique
+  paymentProvider String?
+  paymentRef      String?
   error           String?
   items           OrderItem[]
   fulfillments    Fulfillment[]
@@ -72,6 +74,7 @@ model Order {
   updatedAt       DateTime      @updatedAt
 
   @@index([status])
+  @@index([paymentRef])
 }
 
 model OrderItem {
