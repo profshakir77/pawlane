@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Nunito_Sans } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { SITE_URL } from "@/lib/seo";
 
-const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-display", weight: ["500", "700", "800"] });
-const body = Nunito_Sans({ subsets: ["latin"], variable: "--font-body" });
+const display = Fraunces({ subsets: ["latin"], variable: "--font-display", axes: ["opsz", "SOFT"], style: ["normal", "italic"], display: "swap" });
+const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 
 const name = process.env.NEXT_PUBLIC_STORE_NAME ?? "Pawlane";
 const description = "Dog and cat beds, lick mats, brushes, harnesses and water fountains we use with our own pets. Free tracked shipping worldwide and 30-day returns.";
