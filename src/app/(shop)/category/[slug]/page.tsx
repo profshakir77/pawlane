@@ -47,7 +47,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
         <h1 className="mx-auto mt-4 max-w-3xl text-5xl leading-[1.05] sm:text-6xl">{copy.title}</h1>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink/70 sm:text-lg">{copy.intro}</p>
       </header>
-      <div className="mt-12 grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 lg:grid-cols-4">
+      <div className="mt-12 grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4">
         {data.products.map((p) => <ProductCard key={p.id} p={toCard(p)} />)}
       </div>
     </div>
