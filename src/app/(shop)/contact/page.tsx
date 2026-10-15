@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Prose } from "@/components/Prose";
 import { SUPPORT_EMAIL } from "@/lib/business";
 
-export const metadata = { title: "Contact", description: "How to reach the Pawlane team about an order or a product.", alternates: { canonical: "/contact" } };
+export const metadata = { title: "Contact", description: "How to reach the Wrenpaw team about an order or a product.", alternates: { canonical: "/contact" } };
 
 export default function Contact() {
   return (
