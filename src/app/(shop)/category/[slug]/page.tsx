@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ProductCard } from "@/components/ProductCard";
+import { ProductCard, toCard } from "@/components/ProductCard";
 import { prisma } from "@/lib/db";
 import { JsonLd, abs, breadcrumbLd, categoryCopy, categorySlug } from "@/lib/seo";
 
@@ -35,19 +35,20 @@ export default async function CategoryPage({ params }: { params: { slug: string 
   const path = `/category/${params.slug}`;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-12">
+    <div className="container-x pt-6">
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: data.category, path }])} />
       <JsonLd data={{
         "@context": "https://schema.org", "@type": "ItemList",
         itemListElement: data.products.map((p, i) => ({ "@type": "ListItem", position: i + 1, url: abs(`/products/${p.slug}`) })),
       }} />
-      <nav aria-label="Breadcrumb" className="text-sm text-ink/60"><Link href="/">Home</Link> / {data.category}</nav>
-      <h1 className="mt-2 text-5xl font-extrabold">{copy.title}</h1>
-      <p className="mt-4 max-w-2xl text-lg text-ink/75">{copy.intro}</p>
-      <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3">
-        {data.products.map((p) => (
-          <ProductCard key={p.id} p={{ slug: p.slug, title: p.title, image: p.images[0], category: p.category, fromCents: p.variants[0]?.priceCents ?? 0, compareAtCents: p.variants[0]?.compareAtCents }} />
-        ))}
+      <nav aria-label="Breadcrumb" className="text-xs text-ink/55"><Link href="/" className="hover:text-ink">Home</Link><span className="mx-2">/</span><span className="text-ink">{data.category}</span></nav>
+      <header className="border-b border-line pb-12 pt-10 text-center">
+        <p className="eyebrow">{data.products.length} {data.products.length === 1 ? "piece" : "pieces"}</p>
+        <h1 className="mx-auto mt-4 max-w-3xl text-5xl leading-[1.05] sm:text-6xl">{copy.title}</h1>
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink/70 sm:text-lg">{copy.intro}</p>
+      </header>
+      <div className="mt-12 grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 lg:grid-cols-4">
+        {data.products.map((p) => <ProductCard key={p.id} p={toCard(p)} />)}
       </div>
     </div>
   );
