@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Price, useShop } from "./ShopProvider";
+import { track } from "@/lib/track";
 
 type V = { id: string; name: string; priceCents: number; compareAtCents: number | null; stock: number; image: string | null };
 
@@ -16,6 +17,10 @@ export function AddToCart({ product, variants }: { product: { title: string; slu
   const save = v.compareAtCents && v.compareAtCents > v.priceCents ? Math.round((1 - v.priceCents / v.compareAtCents) * 100) : 0;
   const soldOut = v.stock <= 0;
 
+  useEffect(() => {
+    track("view_item", { value: v.priceCents / 100, items: [{ id: v.id, name: product.title, price: v.priceCents / 100 }] });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Sticky mobile bar appears once the main button scrolls out of view.
   useEffect(() => {
     const el = btnRef.current;
@@ -27,6 +32,7 @@ export function AddToCart({ product, variants }: { product: { title: string; slu
 
   const onAdd = () => {
     add({ variantId: v.id, quantity: qty, title: product.title, variantName: v.name, priceCents: v.priceCents, image: v.image ?? product.image, slug: product.slug });
+    track("add_to_cart", { value: (v.priceCents * qty) / 100, items: [{ id: v.id, name: product.title, price: v.priceCents / 100, quantity: qty }] });
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
   };
@@ -42,7 +48,7 @@ export function AddToCart({ product, variants }: { product: { title: string; slu
           </>
         )}
       </div>
-      <p className="-mt-3 text-xs text-ink/55">Free tracked shipping included. Taxes calculated at checkout.</p>
+      <p className="-mt-3 text-xs text-ink/55">Free tracked shipping included.</p>
 
       {variants.length > 1 && (
         <fieldset>

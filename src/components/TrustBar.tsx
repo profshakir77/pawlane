@@ -1,7 +1,7 @@
 const ITEMS = [
   { t: "Free worldwide shipping", d: "Tracked to your door, 7 to 15 business days", icon: <path d="M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM17 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" /> },
   { t: "30-day returns", d: "Not right for your pet? Send it back", icon: <path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4" /> },
-  { t: "Secure checkout", d: "Cards, Apple Pay and Google Pay", icon: <><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 018 0v3" /></> },
+  { t: "Secure checkout", d: "Visa and Mastercard, fully encrypted", icon: <><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 018 0v3" /></> },
   { t: "Real human support", d: "Email us, a person replies", icon: <path d="M4 5h16v11H8l-4 4V5z" /> },
 ];
 

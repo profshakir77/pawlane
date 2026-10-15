@@ -15,7 +15,7 @@ export function Header({ categories = [] }: { categories?: string[] }) {
   const { cart, currency, setCurrency } = useShop();
   const [open, setOpen] = useState(false);
   const count = cart.reduce((s, l) => s + l.quantity, 0);
-  const name = process.env.NEXT_PUBLIC_STORE_NAME ?? "Pawlane";
+  const name = process.env.NEXT_PUBLIC_STORE_NAME ?? "Wrenpaw";
 
   return (
     <>
