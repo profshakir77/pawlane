@@ -12,7 +12,7 @@ export async function GET() {
   const items = products.flatMap((p) =>
     p.variants.map((v) => `
     <item>
-      <g:id>${esc(v.sku || v.id)}</g:id>
+      <g:id>${esc(v.id)}</g:id>
       <g:item_group_id>${esc(p.id)}</g:item_group_id>
       <g:title>${esc(p.variants.length > 1 ? `${p.title} - ${v.name}` : p.title)}</g:title>
       <g:description>${esc(p.description.slice(0, 4900))}</g:description>
