@@ -64,11 +64,11 @@ export default async function ProductPage({ params }: { params: { slug: string }
           <span aria-current="page" className="text-ink">{p.title}</span>
         </nav>
 
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-7">
+        <div className="grid gap-10 md:grid-cols-12 lg:gap-16">
+          <div className="md:col-span-7">
             <ProductGallery images={p.images} title={p.title} />
           </div>
-          <div className="lg:sticky lg:top-28 lg:col-span-5 lg:self-start">
+          <div className="md:sticky md:top-28 md:col-span-5 md:self-start">
             <Link href={catPath} className="eyebrow hover:text-ink">{p.category}</Link>
             <h1 className="mt-3 text-4xl leading-[1.1] sm:text-5xl">{p.title}</h1>
             <div className="mt-6">
@@ -120,7 +120,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
         <section className="container-x mt-24">
           <p className="eyebrow">You may also like</p>
           <h2 className="mt-3 text-4xl">Pairs well with</h2>
-          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 lg:grid-cols-4">
+          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4">
             {related.map((r) => <ProductCard key={r.id} p={toCard(r)} />)}
           </div>
         </section>
