@@ -16,7 +16,7 @@ export default async function Overview() {
   ]);
   const revenue = paid.reduce((s, o) => s + o.subtotalCents, 0);
   const cost = paid.reduce((s, o) => s + o.costCents, 0);
-  // Stripe takes roughly 2.9% + 30c per order; subtract it for a realistic figure.
+  // Card processing (Safepay ~2.9%, Stripe ~2.9% + 30c); subtract it for a realistic figure.
   const fees = Math.round(revenue * 0.029) + paid.length * 30;
 
   const stats = [
