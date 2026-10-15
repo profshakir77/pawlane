@@ -26,7 +26,9 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-paper/65">
               Thoughtfully chosen essentials for dogs and cats. Every piece is picked to fix a real everyday problem, shipped free and backed by a 30-day return window.
             </p>
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="mt-6 inline-block border-b border-paper/30 pb-0.5 text-sm hover:border-paper">{SUPPORT_EMAIL}</a>
+            {!SUPPORT_EMAIL.endsWith("example.com") && (
+              <a href={`mailto:${SUPPORT_EMAIL}`} className="mt-6 inline-block border-b border-paper/30 pb-0.5 text-sm hover:border-paper">{SUPPORT_EMAIL}</a>
+            )}
           </div>
           <nav aria-label="Shop by category" className="md:col-span-2">
             <p className="text-[11px] font-semibold uppercase tracking-caps text-paper/45">Shop</p>

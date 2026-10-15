@@ -43,7 +43,7 @@ export default async function Home() {
           </dl>
         </div>
         <div className="relative lg:col-span-6">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-meadow sm:aspect-[5/5] lg:aspect-[4/5]">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-meadow sm:aspect-[16/10] lg:aspect-[4/5]">
             {hero && <img src={hero.images[0]} alt={hero.title} className="h-full w-full object-cover" fetchPriority="high" />}
             {hero && (
               <Link href={`/products/${hero.slug}`} className="absolute bottom-5 left-5 right-5 flex items-center justify-between gap-4 rounded-lg bg-paper/95 p-4 shadow-soft backdrop-blur transition hover:bg-paper sm:right-auto sm:min-w-[300px]">
@@ -74,7 +74,7 @@ export default async function Home() {
               <h2 className="mt-3 text-4xl sm:text-5xl">Shop by need</h2>
             </div>
           </div>
-          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
             {catTiles.map((c) => (
               <Link key={c.name} href={`/category/${categorySlug(c.name)}`} className="group relative aspect-[3/4] overflow-hidden rounded-lg bg-meadow">
                 {c.image && <img src={c.image} alt="" aria-hidden loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />}
@@ -106,7 +106,7 @@ export default async function Home() {
         {all.length === 0 ? (
           <p className="mt-10 rounded-lg bg-meadow p-12 text-center text-ink/70">New pieces are on their way. Check back in a day or two.</p>
         ) : (
-          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 lg:grid-cols-4">
+          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4">
             {all.map((p) => <ProductCard key={p.id} p={toCard(p)} />)}
           </div>
         )}
