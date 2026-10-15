@@ -1,25 +1,11 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
 import { Price, useShop } from "@/components/ShopProvider";
+import { PaymentBadges } from "@/components/PaymentBadges";
 
 export default function CartPage() {
   const { cart, setQty, currency } = useShop();
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
   const total = cart.reduce((s, l) => s + l.priceCents * l.quantity, 0);
-
-  async function checkout() {
-    setBusy(true); setError("");
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: cart.map((l) => ({ variantId: l.variantId, quantity: l.quantity })) }),
-    });
-    const json = await res.json();
-    if (json.url) window.location.href = json.url;
-    else { setError(json.error ?? "Checkout could not start. Try again."); setBusy(false); }
-  }
 
   if (!cart.length) {
     return (
@@ -70,12 +56,12 @@ export default function CartPage() {
             <div className="flex justify-between border-t border-ink/10 pt-4 text-lg font-medium"><dt>Total</dt><dd><Price cents={total} /></dd></div>
           </dl>
           {currency !== "USD" && <p className="mt-3 text-xs text-ink/55">Prices in {currency} are estimates. Checkout shows the exact amount in your currency where available.</p>}
-          {error && <p role="alert" className="mt-4 rounded-md bg-clay/10 p-3 text-sm text-clay">{error}</p>}
-          <button onClick={checkout} disabled={busy} className="btn-primary mt-6 w-full">{busy ? "Opening secure checkout..." : "Checkout securely"}</button>
+          <Link href="/checkout" className="btn-primary mt-6 w-full">Checkout securely</Link>
+          <PaymentBadges className="mt-4 justify-center" />
           <ul className="mt-6 space-y-2 text-xs text-ink/60">
             <li>&#10003; Free tracked shipping, 7 to 15 business days</li>
             <li>&#10003; 30 days to return anything</li>
-            <li>&#10003; Card, Apple Pay and Google Pay</li>
+            <li>&#10003; Secure card payment, Visa and Mastercard</li>
           </ul>
         </aside>
       </div>
