@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Price, useShop } from "@/components/ShopProvider";
 import { SHIP_COUNTRIES } from "@/lib/countries";
 import { track } from "@/lib/track";
+import { PaymentBadges } from "@/components/PaymentBadges";
 
 const FAIL: Record<string, string> = {
   verify: "We couldn't confirm that payment. If you were charged, email us with your order number and we'll sort it out.",
@@ -91,6 +92,7 @@ export default function CheckoutPage() {
           </fieldset>
 
           <button type="submit" disabled={busy} className="btn-primary w-full">{busy ? "Opening secure payment..." : "Continue to secure payment"}</button>
+          <PaymentBadges className="justify-center" />
           <p className="text-center text-xs text-ink/55">You'll pay on our payment partner's secure page by Visa or Mastercard. We never see your card number.</p>
         </form>
 
