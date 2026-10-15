@@ -3,17 +3,47 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { SITE_URL } from "@/lib/seo";
 import { SHIP_COUNTRIES, stripe } from "@/lib/stripe";
+import { createSafepayTracker, safepayCheckoutUrl, safepayEnabled } from "@/lib/safepay";
+
+const Customer = z.object({
+  email: z.string().email().max(200),
+  name: z.string().min(2).max(120),
+  phone: z.string().min(5).max(40),
+  line1: z.string().min(3).max(200),
+  line2: z.string().max(200).optional().or(z.literal("")),
+  city: z.string().min(2).max(100),
+  state: z.string().max(100).optional().or(z.literal("")),
+  postalCode: z.string().min(2).max(20),
+  countryCode: z.enum(SHIP_COUNTRIES),
+});
 
 const Body = z.object({
   items: z.array(z.object({ variantId: z.string(), quantity: z.number().int().min(1).max(20) })).min(1).max(30),
+  customer: Customer.optional(),
 });
 
+// Which gateway takes the money. Safepay settles to a Pakistani bank account;
+// Stripe is kept for anyone running this store from a Stripe-supported country.
+function provider(): "safepay" | "stripe" | null {
+  const pref = process.env.PAYMENT_PROVIDER;
+  if (pref === "stripe" && process.env.STRIPE_SECRET_KEY) return "stripe";
+  if (pref === "safepay" && safepayEnabled()) return "safepay";
+  if (safepayEnabled()) return "safepay";
+  if (process.env.STRIPE_SECRET_KEY) return "stripe";
+  return null;
+}
+
 export async function POST(req: Request) {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    return NextResponse.json({ error: "Checkout is not set up yet. Add a Stripe key to start taking orders." }, { status: 503 });
+  const gateway = provider();
+  if (!gateway) {
+    return NextResponse.json({ error: "Checkout opens soon. We're finishing payment setup, please check back shortly." }, { status: 503 });
   }
   const parsed = Body.safeParse(await req.json().catch(() => null));
-  if (!parsed.success) return NextResponse.json({ error: "Your cart is not valid. Refresh and try again." }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: "Please check your details and try again." }, { status: 400 });
+  const { customer } = parsed.data;
+  if (gateway === "safepay" && !customer) {
+    return NextResponse.json({ error: "Please fill in your shipping details." }, { status: 400 });
+  }
 
   // Always price from the database, never from the browser.
   const ids = parsed.data.items.map((i) => i.variantId);
@@ -33,10 +63,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: `${soldOut.v.product.title} (${soldOut.v.name}) has only ${soldOut.v.stock} left.` }, { status: 409 });
   }
 
+  const subtotalCents = lines.reduce((s, l) => s + l.v.priceCents * l.quantity, 0);
   const order = await prisma.order.create({
     data: {
-      subtotalCents: lines.reduce((s, l) => s + l.v.priceCents * l.quantity, 0),
+      subtotalCents,
       costCents: lines.reduce((s, l) => s + l.v.costCents * l.quantity, 0),
+      paymentProvider: gateway,
+      ...(customer && {
+        email: customer.email,
+        name: customer.name,
+        phone: customer.phone,
+        shippingAddress: {
+          name: customer.name,
+          phone: customer.phone,
+          line1: customer.line1,
+          line2: customer.line2 || undefined,
+          city: customer.city,
+          state: customer.state || undefined,
+          postalCode: customer.postalCode,
+          countryCode: customer.countryCode,
+        },
+      }),
       items: {
         create: lines.map((l) => ({
           variantId: l.v.id,
@@ -50,8 +97,27 @@ export async function POST(req: Request) {
   });
 
   const site = SITE_URL;
+
+  if (gateway === "safepay") {
+    try {
+      const token = await createSafepayTracker(Math.round(subtotalCents) / 100);
+      await prisma.order.update({ where: { id: order.id }, data: { paymentRef: token } });
+      const url = safepayCheckoutUrl({
+        token,
+        orderId: String(order.number),
+        redirectUrl: `${site}/api/payments/safepay?order=${order.number}`,
+        cancelUrl: `${site}/checkout?cancelled=1`,
+      });
+      return NextResponse.json({ url, order: order.number, value: subtotalCents / 100 });
+    } catch (e) {
+      await prisma.order.update({ where: { id: order.id }, data: { status: "CANCELLED", error: String(e).slice(0, 500) } });
+      return NextResponse.json({ error: "We couldn't reach the payment page. Please try again in a minute." }, { status: 502 });
+    }
+  }
+
   const session = await stripe().checkout.sessions.create({
     mode: "payment",
+    customer_email: customer?.email,
     line_items: lines.map((l) => ({
       quantity: l.quantity,
       price_data: {
@@ -76,10 +142,10 @@ export async function POST(req: Request) {
     }],
     allow_promotion_codes: true,
     metadata: { orderId: order.id },
-    success_url: `${site}/checkout/success?order=${order.number}`,
+    success_url: `${site}/checkout/success?order=${order.number}&v=${(subtotalCents / 100).toFixed(2)}`,
     cancel_url: `${site}/cart`,
   });
 
-  await prisma.order.update({ where: { id: order.id }, data: { stripeSessionId: session.id } });
-  return NextResponse.json({ url: session.url });
+  await prisma.order.update({ where: { id: order.id }, data: { stripeSessionId: session.id, paymentRef: session.id } });
+  return NextResponse.json({ url: session.url, order: order.number, value: subtotalCents / 100 });
 }
