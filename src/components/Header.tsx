@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { CURRENCIES } from "@/lib/currency";
 import { useShop } from "./ShopProvider";
+import { Logo } from "./Logo";
 
 const slug = (c: string) => c.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -41,8 +42,8 @@ export function Header({ categories = [] }: { categories?: string[] }) {
             </nav>
           </div>
 
-          <Link href="/" className="font-display text-2xl tracking-tight sm:text-[28px]">
-            {name}
+          <Link href="/" aria-label={`${name} home`}>
+            <Logo name={name} />
           </Link>
 
           <div className="flex items-center justify-end gap-2 sm:gap-4">

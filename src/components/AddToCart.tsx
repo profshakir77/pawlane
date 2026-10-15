@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Price, useShop } from "./ShopProvider";
 import { track } from "@/lib/track";
+import { PaymentBadges } from "./PaymentBadges";
 
 type V = { id: string; name: string; priceCents: number; compareAtCents: number | null; stock: number; image: string | null };
 
@@ -76,6 +77,8 @@ export function AddToCart({ product, variants }: { product: { title: string; slu
           {soldOut ? "Sold out" : added ? "Added ✓" : "Add to cart"}
         </button>
       </div>
+
+      <PaymentBadges />
 
       {added && (
         <Link href="/cart" className="btn-ghost w-full">View cart &amp; checkout</Link>
