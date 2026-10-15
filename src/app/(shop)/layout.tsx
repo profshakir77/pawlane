@@ -6,13 +6,15 @@ import { currencyForCountry, getRates } from "@/lib/currency";
 import { prisma } from "@/lib/db";
 import { categorySlug } from "@/lib/seo";
 import { SUPPORT_EMAIL } from "@/lib/business";
+import { LogoMark } from "@/components/Logo";
+import { PaymentBadges } from "@/components/PaymentBadges";
 
 export default async function ShopLayout({ children }: { children: React.ReactNode }) {
   const rates = await getRates();
   const cats = (await prisma.product.findMany({ where: { active: true }, distinct: ["category"], select: { category: true } }))
     .map((c) => c.category).sort();
   const currency = cookies().get("currency")?.value ?? currencyForCountry(headers().get("x-vercel-ip-country"));
-  const name = process.env.NEXT_PUBLIC_STORE_NAME ?? "Pawlane";
+  const name = process.env.NEXT_PUBLIC_STORE_NAME ?? "Wrenpaw";
 
   return (
     <ShopProvider rates={rates} initialCurrency={currency}>
@@ -22,7 +24,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       <footer className="mt-28 bg-ink text-paper">
         <div className="container-x grid gap-12 py-16 md:grid-cols-12">
           <div className="md:col-span-5">
-            <p className="font-display text-3xl">{name}</p>
+            <p className="flex items-center gap-3 font-display text-3xl"><LogoMark size={40} />{name}</p>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-paper/65">
               Thoughtfully chosen essentials for dogs and cats. Every piece is picked to fix a real everyday problem, shipped free and backed by a 30-day return window.
             </p>
@@ -57,7 +59,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
         <div className="border-t border-paper/10">
           <div className="container-x flex flex-col gap-3 py-6 text-xs text-paper/50 sm:flex-row sm:items-center sm:justify-between">
             <p>&copy; {new Date().getFullYear()} {name}. All rights reserved.</p>
-            <p>Secure checkout · Visa · Mastercard · Amex · Apple Pay · Google Pay</p>
+            <PaymentBadges dark />
           </div>
         </div>
       </footer>
