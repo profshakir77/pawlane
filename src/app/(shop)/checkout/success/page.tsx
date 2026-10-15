@@ -1,17 +1,40 @@
 "use client";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useShop } from "@/components/ShopProvider";
+import { track } from "@/lib/track";
 
-export default function Success({ searchParams }: { searchParams: { order?: string } }) {
-  const { clear } = useShop();
-  useEffect(() => { clear(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+export default function Success({ searchParams }: { searchParams: { order?: string; v?: string } }) {
+  const { cart, clear } = useShop();
+  const fired = useRef(false);
+
+  useEffect(() => {
+    if (fired.current) return;
+    // Cart is loaded from storage after mount; wait one tick so items are available for the pixel.
+    const t = setTimeout(() => {
+      fired.current = true;
+      const value = Number(searchParams.v) || cart.reduce((s, l) => s + l.priceCents * l.quantity, 0) / 100;
+      track("purchase", {
+        value, orderId: searchParams.order,
+        items: cart.map((l) => ({ id: l.variantId, name: l.title, price: l.priceCents / 100, quantity: l.quantity })),
+      });
+      clear();
+    }, 400);
+    return () => clearTimeout(t);
+  }, [cart.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <div className="mx-auto max-w-2xl px-5 py-24 text-center">
-      <h1 className="text-5xl">Thanks, that's ordered</h1>
-      <p className="mt-4 text-lg">Your order number is <strong>#{searchParams.order}</strong>. Your receipt should land in your inbox in a minute or two.</p>
-      <p className="mt-2 text-ink/70">It takes a couple of days to pack and hand over to the courier. Once it moves, the tracking number shows up on the tracking page.</p>
-      <Link href="/track" className="btn-primary mt-8">Track this order</Link>
+    <div className="container-x py-28 text-center">
+      <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-moss text-2xl text-paper">&#10003;</span>
+      <p className="eyebrow mt-8">Order #{searchParams.order}</p>
+      <h1 className="mt-4 text-5xl sm:text-6xl">Thank you, it's ordered</h1>
+      <p className="mx-auto mt-5 max-w-lg text-ink/70">
+        A confirmation is on its way to your inbox. It takes a couple of days to pack and hand to the courier. Once it moves, the tracking number appears on the tracking page.
+      </p>
+      <div className="mt-9 flex flex-wrap justify-center gap-3">
+        <Link href="/track" className="btn-primary">Track this order</Link>
+        <Link href="/#shop" className="btn-ghost">Keep shopping</Link>
+      </div>
     </div>
   );
 }
