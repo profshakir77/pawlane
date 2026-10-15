@@ -10,12 +10,12 @@ export default function Privacy() {
       <h2>What we collect</h2>
       <ul>
         <li>When you order: your name, email, phone number and delivery address. We need these to get the parcel to you.</li>
-        <li>Payment details are handled by Stripe. We never see or store your full card number.</li>
+        <li>Payment details are handled by our payment processor (Safepay). We never see or store your full card number.</li>
         <li>Your cart and currency choice are saved in your own browser so they're still there when you come back.</li>
         <li>If we use analytics or advertising tools, they may set cookies to count visits and measure which ads work. You can block these in your browser settings.</li>
       </ul>
       <h2>Who we share it with</h2>
-      <p>Only the companies needed to run the shop: Stripe for payments, our warehouse and shipping partners so they can deliver your order, and our hosting provider. We don't sell your information to anyone.</p>
+      <p>Only the companies needed to run the shop: our payment processor, our warehouse and shipping partners so they can deliver your order, and our hosting provider. We don't sell your information to anyone.</p>
       <h2>How long we keep it</h2>
       <p>Order records are kept for as long as tax and accounting rules require, usually around six years. Everything else is deleted when we no longer need it.</p>
       <h2>Your rights</h2>
