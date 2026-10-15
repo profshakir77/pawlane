@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                String    @id @default(cuid())
+  slug              String    @unique
+  title             String
+  description       String
+  images            String[]
+  category          String
+  supplier          String
+  supplierProductId String
+  active            Boolean   @default(true)
+  priceLocked       Boolean   @default(false)
+  seoTitle          String?
+  seoDescription    String?
+  variants          Variant[]
+  lastSyncedAt      DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([supplier, supplierProductId])
+  @@index([category, active])
+}
+
+model Variant {
+  id                String      @id @default(cuid())
+  productId         String
+  product           Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name              String
+  sku               String
+  supplierVariantId String
+  costCents         Int
+  priceCents        Int
+  compareAtCents    Int?
+  stock             Int         @default(0)
+  image             String?
+  orderItems        OrderItem[]
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SENT_TO_SUPPLIER
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  FAILED
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  number          Int           @unique @default(autoincrement())
+  email           String?
+  name            String?
+  phone           String?
+  shippingAddress Json?
+  status          OrderStatus   @default(PENDING)
+  subtotalCents   Int
+  costCents       Int
+  stripeSessionId String?       @unique
+  error           String?
+  items           OrderItem[]
+  fulfillments    Fulfillment[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status])
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId      String
+  variant        Variant @relation(fields: [variantId], references: [id])
+  title          String
+  quantity       Int
+  unitPriceCents Int
+  unitCostCents  Int
+}
+
+model Fulfillment {
+  id              String   @id @default(cuid())
+  orderId         String
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  supplier        String
+  supplierOrderId String
+  status          String   @default("processing")
+  trackingNumber  String?
+  carrier         String?
+  trackingUrl     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SyncLog {
+  id        String   @id @default(cuid())
+  kind      String
+  ok        Boolean
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  key   String @id
+  value String
+}
