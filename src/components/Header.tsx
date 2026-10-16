@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CURRENCIES } from "@/lib/currency";
 import { useShop } from "./ShopProvider";
 import { Logo } from "./Logo";
+import { SocialLinks } from "./SocialLinks";
 
 const slug = (c: string) => c.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -21,8 +22,8 @@ export function Header({ categories = [] }: { categories?: string[] }) {
   return (
     <>
       <div className="bg-ink text-paper">
-        <p className="container-x py-2.5 text-center text-[11px] font-medium uppercase tracking-caps">
-          Free tracked shipping worldwide <span className="mx-2 opacity-40">·</span> 30-day returns
+        <p className="container-x truncate py-2 text-center text-[10px] font-medium uppercase tracking-caps sm:py-2.5 sm:text-[11px]">
+          Free tracked shipping<span className="hidden sm:inline"> worldwide</span> <span className="mx-2 opacity-40">·</span> 30-day returns
         </p>
       </div>
       <header className="sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">
@@ -50,7 +51,7 @@ export function Header({ categories = [] }: { categories?: string[] }) {
             <Link href="/track" className="hidden text-[13px] font-medium hover:text-moss md:block">Track order</Link>
             <label className="sr-only" htmlFor="cur">Currency</label>
             <select id="cur" value={currency} onChange={(e) => setCurrency(e.target.value)}
-              className="cursor-pointer rounded-full border border-line bg-transparent px-3 py-1.5 text-xs font-medium outline-none hover:border-ink">
+              className="hidden cursor-pointer rounded-full border border-line bg-transparent px-3 py-1.5 text-xs font-medium outline-none hover:border-ink sm:block">
               {CURRENCIES.map((c) => <option key={c}>{c}</option>)}
             </select>
             <Link href="/cart" aria-label={`Cart, ${count} items`} className="relative p-2">
@@ -72,6 +73,16 @@ export function Header({ categories = [] }: { categories?: string[] }) {
                   {n.label}
                 </Link>
               ))}
+              <div className="flex items-center justify-between gap-4 pt-5">
+                <label className="flex items-center gap-2 text-sm text-ink/70">
+                  Currency
+                  <select value={currency} onChange={(e) => setCurrency(e.target.value)}
+                    className="rounded-full border border-line bg-transparent px-3 py-1.5 text-xs font-medium">
+                    {CURRENCIES.map((c) => <option key={c}>{c}</option>)}
+                  </select>
+                </label>
+                <SocialLinks className="text-ink" />
+              </div>
             </div>
           </nav>
         )}

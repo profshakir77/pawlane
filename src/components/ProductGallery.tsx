@@ -7,9 +7,9 @@ export function ProductGallery({ images, title }: { images: string[]; title: str
   if (list.length === 0) return <div className="aspect-square rounded-lg bg-meadow" />;
 
   return (
-    <div className="flex flex-col-reverse gap-3 lg:flex-row">
+    <div className="flex min-w-0 flex-col-reverse gap-3 lg:flex-row">
       {list.length > 1 && (
-        <div className="flex gap-3 overflow-x-auto lg:w-20 lg:flex-col" role="tablist" aria-label="Product photos">
+        <div className="flex min-w-0 gap-3 overflow-x-auto lg:w-20 lg:flex-col" role="tablist" aria-label="Product photos">
           {list.map((src, n) => (
             <button key={src} type="button" role="tab" aria-selected={n === i} aria-label={`Photo ${n + 1}`} onClick={() => setI(n)}
               className={`aspect-square w-16 shrink-0 overflow-hidden rounded-md border transition lg:w-full ${n === i ? "border-ink" : "border-transparent opacity-60 hover:opacity-100"}`}>
