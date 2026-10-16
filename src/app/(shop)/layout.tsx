@@ -1,3 +1,4 @@
+import { SocialLinks } from "@/components/SocialLinks";
 import { cookies, headers } from "next/headers";
 import Link from "next/link";
 import { Header } from "@/components/Header";
@@ -31,6 +32,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             {!SUPPORT_EMAIL.endsWith("example.com") && (
               <a href={`mailto:${SUPPORT_EMAIL}`} className="mt-6 inline-block border-b border-paper/30 pb-0.5 text-sm hover:border-paper">{SUPPORT_EMAIL}</a>
             )}
+            <SocialLinks className="mt-6 text-paper" />
           </div>
           <nav aria-label="Shop by category" className="md:col-span-2">
             <p className="text-[11px] font-semibold uppercase tracking-caps text-paper/45">Shop</p>

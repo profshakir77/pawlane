@@ -23,10 +23,10 @@ export default async function Home() {
       <JsonLd data={orgLd()} />
 
       {/* Hero */}
-      <section className="container-x grid items-center gap-10 pb-16 pt-10 sm:pt-14 lg:grid-cols-12 lg:gap-16 lg:pb-24">
+      <section className="container-x grid items-center gap-8 pb-16 pt-5 sm:gap-10 sm:pt-14 lg:grid-cols-12 lg:gap-16 lg:pb-24">
         <div className="animate-fade-up lg:col-span-6">
           <p className="eyebrow">Considered essentials for dogs &amp; cats</p>
-          <h1 className="mt-5 text-[44px] leading-[1.02] sm:text-6xl lg:text-[76px]">
+          <h1 className="mt-4 text-[40px] leading-[1.02] sm:mt-5 sm:text-6xl lg:text-[76px]">
             Better days for them. <em className="text-moss">Calmer</em> ones for you.
           </h1>
           <p className="mt-6 max-w-md text-base leading-relaxed text-ink/70 sm:text-lg">
@@ -42,8 +42,8 @@ export default async function Home() {
             <div><dt className="text-ink/55">Ships to</dt><dd className="mt-1 font-medium">40+ countries</dd></div>
           </dl>
         </div>
-        <div className="relative lg:col-span-6">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-meadow sm:aspect-[16/10] lg:aspect-[4/5]">
+        <div className="relative order-first lg:order-none lg:col-span-6">
+          <div className="relative aspect-[5/4] overflow-hidden rounded-lg bg-meadow sm:aspect-[16/10] lg:aspect-[4/5]">
             {hero && <img src={hero.images[0]} alt={hero.title} className="h-full w-full object-cover" fetchPriority="high" />}
             {hero && (
               <Link href={`/products/${hero.slug}`} className="absolute bottom-5 left-5 right-5 flex items-center justify-between gap-4 rounded-lg bg-paper/95 p-4 shadow-soft backdrop-blur transition hover:bg-paper sm:right-auto sm:min-w-[300px]">
