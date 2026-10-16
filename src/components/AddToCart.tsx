@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Price, useShop } from "./ShopProvider";
 import { track } from "@/lib/track";
 import { PaymentBadges } from "./PaymentBadges";
+import { SHOW_COMPARE_AT } from "@/lib/pricing";
 
 type V = { id: string; name: string; priceCents: number; compareAtCents: number | null; stock: number; image: string | null };
 
@@ -15,7 +16,7 @@ export function AddToCart({ product, variants }: { product: { title: string; slu
   const [showBar, setShowBar] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const v = variants.find((x) => x.id === vid)!;
-  const save = v.compareAtCents && v.compareAtCents > v.priceCents ? Math.round((1 - v.priceCents / v.compareAtCents) * 100) : 0;
+  const save = SHOW_COMPARE_AT && v.compareAtCents && v.compareAtCents > v.priceCents ? Math.round((1 - v.priceCents / v.compareAtCents) * 100) : 0;
   const soldOut = v.stock <= 0;
 
   useEffect(() => {

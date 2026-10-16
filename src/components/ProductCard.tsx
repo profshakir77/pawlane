@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Price } from "./ShopProvider";
+import { SHOW_COMPARE_AT } from "@/lib/pricing";
 
 type P = { slug: string; title: string; image?: string; image2?: string; fromCents: number; compareAtCents?: number | null; category: string; stock?: number };
 
 export function ProductCard({ p }: { p: P }) {
-  const save = p.compareAtCents && p.compareAtCents > p.fromCents ? Math.round((1 - p.fromCents / p.compareAtCents) * 100) : 0;
+  const save = SHOW_COMPARE_AT && p.compareAtCents && p.compareAtCents > p.fromCents ? Math.round((1 - p.fromCents / p.compareAtCents) * 100) : 0;
   const low = p.stock !== undefined && p.stock > 0 && p.stock < 15;
   const soldOut = p.stock !== undefined && p.stock <= 0;
 
