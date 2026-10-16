@@ -1,3 +1,4 @@
+import { SOCIALS } from "./business";
 export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
   (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000")
@@ -86,7 +87,7 @@ export function productLd(p: { title: string; description: string; slug: string;
 export const orgLd = () => ({
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "Organization", "@id": abs("/#org"), name: STORE_NAME, url: SITE_URL },
+    { "@type": "Organization", "@id": abs("/#org"), name: STORE_NAME, url: SITE_URL, ...(SOCIALS.length ? { sameAs: SOCIALS.map((s) => s.url) } : {}) },
     { "@type": "WebSite", "@id": abs("/#site"), name: STORE_NAME, url: SITE_URL, publisher: { "@id": abs("/#org") } },
   ],
 });

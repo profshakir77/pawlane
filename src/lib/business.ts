@@ -7,3 +7,11 @@ export const RETURN_ADDRESS = process.env.RETURN_ADDRESS || "We'll email you the
 // True once an email service is set up (see lib/email.ts), so pages only
 // promise a confirmation email when one is really sent.
 export const ORDER_EMAILS = process.env.NEXT_PUBLIC_ORDER_EMAILS === "true";
+
+// Social profiles. Only the ones that are set are shown on the site.
+export const SOCIALS = [
+  { name: "Facebook", url: process.env.NEXT_PUBLIC_FACEBOOK_URL || "" },
+  { name: "Instagram", url: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "" },
+  { name: "Pinterest", url: process.env.NEXT_PUBLIC_PINTEREST_URL || "" },
+  { name: "TikTok", url: process.env.NEXT_PUBLIC_TIKTOK_URL || "" },
+].filter((s) => s.url);
