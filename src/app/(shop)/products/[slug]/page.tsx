@@ -65,10 +65,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
         </nav>
 
         <div className="grid gap-10 md:grid-cols-12 lg:gap-16">
-          <div className="md:col-span-7">
+          <div className="min-w-0 md:col-span-7">
             <ProductGallery images={p.images} title={p.title} />
           </div>
-          <div className="md:sticky md:top-28 md:col-span-5 md:self-start">
+          <div className="min-w-0 md:sticky md:top-28 md:col-span-5 md:self-start">
             <Link href={catPath} className="eyebrow hover:text-ink">{p.category}</Link>
             <h1 className="mt-3 text-4xl leading-[1.1] sm:text-5xl">{p.title}</h1>
             <div className="mt-6">
