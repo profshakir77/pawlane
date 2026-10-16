@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useShop } from "@/components/ShopProvider";
 import { track } from "@/lib/track";
+import { ORDER_EMAILS } from "@/lib/business";
 
 export default function Success({ searchParams }: { searchParams: { order?: string; v?: string } }) {
   const { cart, clear } = useShop();
@@ -29,7 +30,10 @@ export default function Success({ searchParams }: { searchParams: { order?: stri
       <p className="eyebrow mt-8">Order #{searchParams.order}</p>
       <h1 className="mt-4 text-5xl sm:text-6xl">Thank you, it's ordered</h1>
       <p className="mx-auto mt-5 max-w-lg text-ink/70">
-        A confirmation is on its way to your inbox. It takes a couple of days to pack and hand to the courier. Once it moves, the tracking number appears on the tracking page.
+        {ORDER_EMAILS
+          ? "A confirmation is on its way to your inbox. "
+          : `Please keep your order number, #${searchParams.order ?? ""}. `}
+        It takes a couple of days to pack and hand to the courier. Once it moves, the tracking number appears on the tracking page.
       </p>
       <div className="mt-9 flex flex-wrap justify-center gap-3">
         <Link href="/track" className="btn-primary">Track this order</Link>
