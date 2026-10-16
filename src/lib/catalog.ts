@@ -10,7 +10,12 @@ export async function importProduct(supplier: string, supplierProductId: string,
   if (!sp) throw new Error("Supplier product not found");
   if (!sp.variants.length) throw new Error("Supplier product has no variants");
 
-  const stock = await getSupplier(supplier).getStock(sp.variants.map((v) => v.supplierVariantId));
+  // Use stock from the product details when the supplier sends it (one call);
+  // otherwise ask per variant.
+  const known = sp.variants.every((v) => typeof v.stock === "number");
+  const stock: Record<string, number> = known
+    ? {}
+    : await getSupplier(supplier).getStock(sp.variants.map((v) => v.supplierVariantId));
   const variants = sp.variants.map((v) => {
     const price = retailPrice(v.costCents);
     return {
