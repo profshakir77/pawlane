@@ -7,7 +7,13 @@ export function retailPrice(costCents: number): number {
   return Math.ceil(raw / 100) * 100 - 1; // ends in .99
 }
 
-export function compareAtPrice(priceCents: number): number {
+// "Was" prices must be prices you really charged before (US FTC rules), so
+// they stay off until you run a genuine sale. Set NEXT_PUBLIC_SHOW_COMPARE_AT
+// to "true" only then.
+export const SHOW_COMPARE_AT = process.env.NEXT_PUBLIC_SHOW_COMPARE_AT === "true";
+
+export function compareAtPrice(priceCents: number): number | null {
+  if (!SHOW_COMPARE_AT) return null;
   return Math.ceil((priceCents * 1.4) / 100) * 100 - 1;
 }
 
