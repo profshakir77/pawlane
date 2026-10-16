@@ -1,5 +1,6 @@
 import { prisma } from "./db";
 import { forwardOrder } from "./fulfillment";
+import { sendOrderConfirmation } from "./email";
 
 /**
  * Marks a PENDING order as paid, takes the stock and (optionally) sends it to
@@ -16,6 +17,11 @@ export async function markOrderPaid(orderId: string) {
   await prisma.$transaction(
     order.items.map((i) => prisma.variant.update({ where: { id: i.variantId }, data: { stock: { decrement: i.quantity } } })),
   );
+
+  // Confirmation email. A failed email must never undo a paid order.
+  try { await sendOrderConfirmation(order); } catch (e) {
+    await prisma.order.update({ where: { id: orderId }, data: { error: `Email: ${String(e).slice(0, 480)}` } });
+  }
 
   if (process.env.AUTO_FULFILL === "true") {
     try { await forwardOrder(orderId); } catch (e) {
