@@ -35,14 +35,26 @@ async function getToken(): Promise<string> {
   return json.data.accessToken;
 }
 
-async function cj<T = any>(path: string, init?: RequestInit): Promise<T> {
+// CJ allows about 1 request per second on standard accounts, so space calls
+// out and retry once if CJ still says "Too Many Requests".
+let lastCall = 0;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function cj<T = any>(path: string, init?: RequestInit, retry = true): Promise<T> {
   const token = await getToken();
+  const wait = lastCall + 1100 - Date.now();
+  if (wait > 0) await sleep(wait);
+  lastCall = Date.now();
   const res = await fetch(`${BASE}${path}`, {
     ...init,
     headers: { "Content-Type": "application/json", "CJ-Access-Token": token },
     cache: "no-store",
   });
   const json = await res.json();
+  if (retry && /too many requests|qps/i.test(String(json?.message ?? ""))) {
+    await sleep(1500);
+    return cj<T>(path, init, false);
+  }
   if (json?.code !== 200 && json?.result !== true) {
     throw new Error(`CJ ${path}: ${json?.message ?? res.status}`);
   }
@@ -103,6 +115,9 @@ export const cjAdapter: SupplierAdapter = {
           sku: v.variantSku,
           costCents: cents(v.variantSellPrice),
           image: v.variantImage,
+          stock: Array.isArray(v.inventories)
+            ? v.inventories.reduce((sum: number, i: any) => sum + Number(i?.totalInventory ?? 0), 0)
+            : undefined,
         })),
       };
     } catch (e) {
