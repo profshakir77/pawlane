@@ -74,15 +74,25 @@ function stripHtml(html: string) {
 export const cjAdapter: SupplierAdapter = {
   name: "cj",
 
+  // Uses CJ's keyword search (listV2). US-warehouse stock first for faster
+  // delivery to our main market, then falls back to all warehouses.
   async searchProducts(query, page = 1): Promise<SupplierSummary[]> {
-    const q = new URLSearchParams({ productNameEn: query, pageNum: String(page), pageSize: "20" });
-    const data = await cj<any>(`/product/list?${q}`);
-    return (data?.list ?? []).map((p: any) => ({
-      supplierProductId: p.pid,
-      title: p.productNameEn,
-      image: images(p)[0],
-      costCents: cents(p.sellPrice),
-    }));
+    const run = async (country?: string) => {
+      const q = new URLSearchParams({ keyWord: query, page: String(page), size: "24" });
+      if (country) q.set("countryCode", country);
+      const data = await cj<any>(`/product/listV2?${q}`);
+      const list = (data?.content ?? []).flatMap((c: any) => c?.productList ?? []);
+      return list.map((p: any) => ({
+        supplierProductId: String(p.id),
+        title: p.nameEn,
+        image: p.bigImage,
+        costCents: cents(p.sellPrice),
+      }));
+    };
+    const us = await run("US");
+    if (us.length >= 6) return us;
+    const seen = new Set(us.map((p: SupplierSummary) => p.supplierProductId));
+    return [...us, ...(await run()).filter((p: SupplierSummary) => !seen.has(p.supplierProductId))];
   },
 
   async getProduct(id): Promise<SupplierProduct | null> {
