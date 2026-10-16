@@ -48,7 +48,7 @@ export default async function Home() {
             {hero && (
               <Link href={`/products/${hero.slug}`} className="absolute bottom-5 left-5 right-5 flex items-center justify-between gap-4 rounded-lg bg-paper/95 p-4 shadow-soft backdrop-blur transition hover:bg-paper sm:right-auto sm:min-w-[300px]">
                 <span>
-                  <span className="eyebrow">Bestseller</span>
+                  <span className="eyebrow">Featured</span>
                   <span className="mt-1 block font-display text-lg leading-tight">{hero.title}</span>
                 </span>
                 <span aria-hidden className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink text-paper">&rarr;</span>
