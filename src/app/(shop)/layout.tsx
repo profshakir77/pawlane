@@ -53,6 +53,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
               <li><Link href="/about" className="text-paper/80 hover:text-paper">About us</Link></li>
               <li><Link href="/privacy" className="text-paper/80 hover:text-paper">Privacy policy</Link></li>
               <li><Link href="/terms" className="text-paper/80 hover:text-paper">Terms of service</Link></li>
+              <li><Link href="/ownership" className="text-paper/80 hover:text-paper">Ownership</Link></li>
             </ul>
           </nav>
         </div>
