@@ -39,7 +39,7 @@ export default async function Home() {
           <dl className="mt-12 flex gap-10 border-t border-line pt-6 text-sm">
             <div><dt className="text-ink/55">Shipping</dt><dd className="mt-1 font-medium">Free, tracked</dd></div>
             <div><dt className="text-ink/55">Returns</dt><dd className="mt-1 font-medium">30 days</dd></div>
-            <div><dt className="text-ink/55">Ships to</dt><dd className="mt-1 font-medium">40+ countries</dd></div>
+            <div><dt className="text-ink/55">Ships to</dt><dd className="mt-1 font-medium">USA &amp; Canada</dd></div>
           </dl>
         </div>
         <div className="relative order-first lg:order-none lg:col-span-6">
