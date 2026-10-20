@@ -8,11 +8,11 @@ const display = Fraunces({ subsets: ["latin"], variable: "--font-display", axes:
 const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 
 const name = process.env.NEXT_PUBLIC_STORE_NAME ?? "Wrenpaw";
-const description = "Dog and cat beds, lick mats, brushes, harnesses and water fountains we use with our own pets. Free tracked shipping worldwide and 30-day returns.";
+const description = "Dog and cat beds, lick mats, brushes, harnesses and water fountains that solve everyday pet problems. Free tracked shipping to the USA and Canada, and 30-day returns.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: `${name}: Pet Supplies with Free Worldwide Shipping`, template: `%s | ${name}` },
+  title: { default: `${name}: Pet Supplies with Free US & Canada Shipping`, template: `%s | ${name}` },
   description,
   alternates: { canonical: "/" },
   openGraph: { type: "website", siteName: name, description, locale: "en_US" },
