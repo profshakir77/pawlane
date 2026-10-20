@@ -8,7 +8,7 @@ export default function ShippingReturns() {
   return (
     <Prose title="Shipping and returns" updated="October 2026">
       <h2>Shipping</h2>
-      <p>Shipping is free on every order, to every country we deliver to. You'll see the full list of countries at checkout.</p>
+      <p>We currently ship to the USA and Canada, and shipping is free on every order. Delivery to the UK and Europe is coming later.</p>
       <ul>
         <li>We take 1 to 3 business days to pack your order.</li>
         <li>Delivery then takes 7 to 15 business days for most countries. Remote areas and busy periods like November and December can take longer.</li>
@@ -18,9 +18,8 @@ export default function ShippingReturns() {
       <h2>Import taxes and duties</h2>
       <p>Orders ship from our fulfilment partner's warehouse, usually outside your country, so import charges can apply:</p>
       <ul>
-        <li>European Union: VAT is due on every imported parcel, whatever its value, and a €3 customs duty applies to low-value parcels from 1 July 2026. If these aren't included at checkout, the carrier may ask you to pay them, plus a handling fee, before delivery.</li>
         <li>United States: low-value parcels no longer enter duty free, so duties may be added on delivery.</li>
-        <li>United Kingdom, Canada and Australia: import VAT, GST or duty may apply depending on the order value.</li>
+        <li>Canada: GST/HST, and duty on some items, may apply depending on the order value.</li>
       </ul>
       <p>Any charges your country applies on delivery are paid by the recipient. If you'd like an estimate before you order, email us and we'll tell you what to expect.</p>
       <h2>If your order hasn't arrived</h2>
