@@ -1,11 +1,9 @@
-export const CURRENCIES = ["USD", "EUR", "GBP", "CAD", "AUD", "AED", "SAR", "INR", "PKR"] as const;
+export const CURRENCIES = ["USD", "CAD"] as const;
 export type Currency = (typeof CURRENCIES)[number];
 export type Rates = Record<string, number>;
 
 const COUNTRY_CURRENCY: Record<string, Currency> = {
-  US: "USD", GB: "GBP", CA: "CAD", AU: "AUD", AE: "AED", SA: "SAR", IN: "INR", PK: "PKR",
-  DE: "EUR", FR: "EUR", IT: "EUR", ES: "EUR", NL: "EUR", IE: "EUR", BE: "EUR", AT: "EUR",
-  PT: "EUR", FI: "EUR", GR: "EUR",
+  US: "USD", CA: "CAD",
 };
 
 export function currencyForCountry(country?: string | null): Currency {
