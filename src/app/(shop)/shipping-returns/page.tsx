@@ -15,8 +15,14 @@ export default function ShippingReturns() {
         <li>Every parcel is tracked. Your tracking number appears on the <Link href="/track">tracking page</Link> once the parcel is moving, usually within 2 to 4 days of ordering.</li>
         <li>If you order several things, they may arrive in separate parcels.</li>
       </ul>
-      <h2>Customs and import fees</h2>
-      <p>Some countries charge import tax on parcels. For orders to the US, UK, EU, Canada and Australia, low-value parcels usually come in without extra fees, but rules change and we can't promise it for every country. Any charges your country applies are your responsibility.</p>
+      <h2>Import taxes and duties</h2>
+      <p>Orders ship from our fulfilment partner's warehouse, usually outside your country, so import charges can apply:</p>
+      <ul>
+        <li>European Union: VAT is due on every imported parcel, whatever its value, and a €3 customs duty applies to low-value parcels from 1 July 2026. If these aren't included at checkout, the carrier may ask you to pay them, plus a handling fee, before delivery.</li>
+        <li>United States: low-value parcels no longer enter duty free, so duties may be added on delivery.</li>
+        <li>United Kingdom, Canada and Australia: import VAT, GST or duty may apply depending on the order value.</li>
+      </ul>
+      <p>Any charges your country applies on delivery are paid by the recipient. If you'd like an estimate before you order, email us and we'll tell you what to expect.</p>
       <h2>If your order hasn't arrived</h2>
       <p>If it's been more than 20 business days and the tracking hasn't moved, email us at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> with your order number. We'll chase it, and if it's lost we'll send a replacement or refund you in full.</p>
       <h2>Returns</h2>
