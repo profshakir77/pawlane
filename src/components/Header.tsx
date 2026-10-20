@@ -23,7 +23,7 @@ export function Header({ categories = [] }: { categories?: string[] }) {
     <>
       <div className="bg-ink text-paper">
         <p className="container-x truncate py-2 text-center text-[10px] font-medium uppercase tracking-caps sm:py-2.5 sm:text-[11px]">
-          Free tracked shipping<span className="hidden sm:inline"> worldwide</span> <span className="mx-2 opacity-40">·</span> 30-day returns
+          Free tracked shipping<span className="hidden sm:inline"> to the USA &amp; Canada</span> <span className="mx-2 opacity-40">·</span> 30-day returns
         </p>
       </div>
       <header className="sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md">
