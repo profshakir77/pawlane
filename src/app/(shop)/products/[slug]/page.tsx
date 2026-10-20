@@ -48,7 +48,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
   const catPath = `/category/${categorySlug(p.category)}`;
 
   const details = [
-    { t: "Shipping", d: "Free tracked shipping to 40+ countries. Most parcels arrive in 7 to 15 business days. You'll get a tracking link by email." },
+    { t: "Shipping", d: "Free tracked shipping to the USA and Canada. Most parcels arrive in 7 to 15 business days. You'll get a tracking link by email." },
     { t: "Returns", d: "If it doesn't suit your pet, you have 30 days from delivery to send it back for a refund.", link: { href: "/shipping-returns", label: "How returns work" } },
     { t: "Payment", d: "Pay securely by Visa or Mastercard on our payment partner's encrypted page. Your card details never touch our servers." },
   ];
