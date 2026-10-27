@@ -6,7 +6,7 @@ import { ShopProvider } from "@/components/ShopProvider";
 import { currencyForCountry, getRates } from "@/lib/currency";
 import { prisma } from "@/lib/db";
 import { categorySlug } from "@/lib/seo";
-import { SUPPORT_EMAIL } from "@/lib/business";
+import { SUPPORT_EMAIL, BUSINESS_ADDRESS } from "@/lib/business";
 import { LogoMark } from "@/components/Logo";
 import { PaymentBadges } from "@/components/PaymentBadges";
 
@@ -32,6 +32,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             {!SUPPORT_EMAIL.endsWith("example.com") && (
               <a href={`mailto:${SUPPORT_EMAIL}`} className="mt-6 inline-block border-b border-paper/30 pb-0.5 text-sm hover:border-paper">{SUPPORT_EMAIL}</a>
             )}
+            <address className="mt-6 max-w-sm text-sm not-italic leading-relaxed text-paper/65">{BUSINESS_ADDRESS}</address>
             <SocialLinks className="mt-6 text-paper" />
           </div>
           <nav aria-label="Shop by category" className="md:col-span-2">
@@ -44,6 +45,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             <p className="text-[11px] font-semibold uppercase tracking-caps text-paper/45">Help</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li><Link href="/track" className="text-paper/80 hover:text-paper">Track an order</Link></li>
+              <li><Link href="/faq" className="text-paper/80 hover:text-paper">FAQ</Link></li>
               <li><Link href="/shipping-returns" className="text-paper/80 hover:text-paper">Shipping &amp; returns</Link></li>
               <li><Link href="/contact" className="text-paper/80 hover:text-paper">Contact</Link></li>
               <li><Link href="/guides" className="text-paper/80 hover:text-paper">Buying guides</Link></li>
