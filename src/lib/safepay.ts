@@ -59,6 +59,31 @@ export function verifySafepayRedirect(tracker: string, sig: string) {
   return secrets.some((secret) => safeEqual(crypto.createHmac("sha256", secret).update(tracker).digest("hex"), sig));
 }
 
+/**
+ * Safepay's checkout redirect can come back with only `order` and `tracker` (no signature),
+ * so confirm payment server-to-server: ask Safepay for the tracker using our merchant secret.
+ */
+export async function safepayTrackerIsPaid(tracker: string) {
+  const secret = process.env.SAFEPAY_SECRET_KEY;
+  if (!secret || !/^track_[0-9a-f-]{36}$/i.test(tracker)) return false;
+  try {
+    const res = await fetch(`${API}/reporter/api/v1/payments/${tracker}`, {
+      headers: { "X-SFPY-MERCHANT-SECRET": secret },
+      cache: "no-store",
+    });
+    const json = await res.json().catch(() => null);
+    const d = json?.data ?? {};
+    const notificationState = String(d.notification?.state ?? "").toUpperCase();
+    const trackerState = String(d.tracker?.state ?? d.state ?? "").toUpperCase();
+    // Temporary diagnostics: states and field names only.
+    console.log("[safepay-lookup]", res.status, JSON.stringify({ keys: Object.keys(d), notificationState, trackerState }));
+    if (!res.ok) return false;
+    return notificationState === "PAID" || trackerState === "TRACKER_ENDED";
+  } catch {
+    return false;
+  }
+}
+
 /** Webhook signature: HMAC-SHA512(JSON.stringify(body.data), webhook secret) in x-sfpy-signature. */
 export function verifySafepayWebhook(data: unknown, signature: string | null) {
   if (!signature || !process.env.SAFEPAY_WEBHOOK_SECRET) return false;
