@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { markOrderPaid } from "@/lib/orders";
-import { verifySafepayRedirect } from "@/lib/safepay";
+import { safepayTrackerIsPaid, verifySafepayRedirect } from "@/lib/safepay";
 import { SITE_URL } from "@/lib/seo";
 
 export const runtime = "nodejs";
@@ -27,12 +27,12 @@ async function handle(req: Request) {
   const sig = params.get("sig") ?? params.get("signature") ?? "";
   const number = Number(params.get("order") ?? params.get("order_id") ?? params.get("reference"));
 
-  // Temporary diagnostics: field names and lengths only, never values.
-  console.log("[safepay-redirect]", req.method, JSON.stringify({ keys: [...params.keys()], trackerLen: tracker.length, sigLen: sig.length, hasOrder: !Number.isNaN(number) }));
-
   const fail = (reason: string) => NextResponse.redirect(`${SITE_URL}/checkout?failed=${encodeURIComponent(reason)}`, 303);
 
-  if (!verifySafepayRedirect(tracker, sig)) return fail("verify");
+  // Safepay may redirect with only the tracker and no signature; in that case confirm
+  // payment by asking Safepay directly.
+  const verified = sig ? verifySafepayRedirect(tracker, sig) : await safepayTrackerIsPaid(tracker);
+  if (!verified) return fail("verify");
 
   // The tracker was created server-side for this exact order total, so a valid
   // signature on it proves this order was paid.
