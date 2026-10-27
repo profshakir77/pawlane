@@ -52,9 +52,11 @@ const safeEqual = (a: string, b: string) => {
 
 /** Signature Safepay sends back on the redirect: HMAC-SHA256(tracker, v1 secret). */
 export function verifySafepayRedirect(tracker: string, sig: string) {
-  if (!tracker || !sig || !process.env.SAFEPAY_SECRET_KEY) return false;
-  const expected = crypto.createHmac("sha256", process.env.SAFEPAY_SECRET_KEY).update(tracker).digest("hex");
-  return safeEqual(expected, sig);
+  if (!tracker || !sig) return false;
+  // Safepay may sign the redirect with either the API secret key or the webhook
+  // shared secret, so accept a match against whichever of them is configured.
+  const secrets = [process.env.SAFEPAY_SECRET_KEY, process.env.SAFEPAY_WEBHOOK_SECRET].filter((s): s is string => !!s);
+  return secrets.some((secret) => safeEqual(crypto.createHmac("sha256", secret).update(tracker).digest("hex"), sig));
 }
 
 /** Webhook signature: HMAC-SHA512(JSON.stringify(body.data), webhook secret) in x-sfpy-signature. */
