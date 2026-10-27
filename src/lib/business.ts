@@ -15,3 +15,6 @@ export const SOCIALS = [
   { name: "Pinterest", url: process.env.NEXT_PUBLIC_PINTEREST_URL || "" },
   { name: "TikTok", url: process.env.NEXT_PUBLIC_TIKTOK_URL || "" },
 ].filter((s) => s.url);
+
+// Business address shown in the footer on every page.
+export const BUSINESS_ADDRESS = process.env.NEXT_PUBLIC_BUSINESS_ADDRESS || "Flat 7, Block E22, Street 97, PHA Apartments, G-11/3, Islamabad, Pakistan";
