@@ -13,6 +13,7 @@ export function Header({ categories = [] }: { categories?: string[] }) {
     { href: "/#shop", label: "Shop all" },
     ...categories.slice(0, 4).map((c) => ({ href: `/category/${slug(c)}`, label: c })),
     { href: "/guides", label: "Journal" },
+    { href: "/faq", label: "FAQ" },
   ];
   const { cart, currency, setCurrency } = useShop();
   const [open, setOpen] = useState(false);
