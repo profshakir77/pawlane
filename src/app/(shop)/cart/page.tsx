@@ -2,10 +2,13 @@
 import Link from "next/link";
 import { Price, useShop } from "@/components/ShopProvider";
 import { PaymentBadges } from "@/components/PaymentBadges";
+import { bundleDiscountCents } from "@/lib/bundles";
 
 export default function CartPage() {
   const { cart, setQty, currency } = useShop();
-  const total = cart.reduce((s, l) => s + l.priceCents * l.quantity, 0);
+  const subtotal = cart.reduce((s, l) => s + l.priceCents * l.quantity, 0);
+  const discount = bundleDiscountCents(cart);
+  const total = subtotal - discount;
 
   if (!cart.length) {
     return (
@@ -51,7 +54,8 @@ export default function CartPage() {
         <aside className="h-fit rounded-lg bg-meadow p-7 lg:sticky lg:top-28 lg:col-span-5">
           <h2 className="text-2xl">Order summary</h2>
           <dl className="mt-6 space-y-3 text-sm">
-            <div className="flex justify-between"><dt className="text-ink/65">Subtotal</dt><dd><Price cents={total} /></dd></div>
+            <div className="flex justify-between"><dt className="text-ink/65">Subtotal</dt><dd><Price cents={subtotal} /></dd></div>
+            {discount > 0 && <div className="flex justify-between text-moss"><dt>Bundle saving</dt><dd>&minus;<Price cents={discount} /></dd></div>}
             <div className="flex justify-between"><dt className="text-ink/65">Shipping</dt><dd className="font-medium text-moss">Free</dd></div>
             <div className="flex justify-between border-t border-ink/10 pt-4 text-lg font-medium"><dt>Total</dt><dd><Price cents={total} /></dd></div>
           </dl>
