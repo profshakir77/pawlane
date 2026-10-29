@@ -27,23 +27,27 @@ export function ShopProvider({ children, rates, initialCurrency }: { children: R
   useEffect(() => {
     try { setCart(JSON.parse(localStorage.getItem("cart") ?? "[]")); } catch {}
   }, []);
-  const save = (next: CartLine[]) => {
-    setCart(next);
-    try { localStorage.setItem("cart", JSON.stringify(next)); } catch {}
+  // Always update from the latest cart, so several adds in a row (a bundle) all stick.
+  const save = (update: (prev: CartLine[]) => CartLine[]) => {
+    setCart((prev) => {
+      const next = update(prev);
+      try { localStorage.setItem("cart", JSON.stringify(next)); } catch {}
+      return next;
+    });
   };
 
   return (
     <ShopCtx.Provider
       value={{
         cart,
-        add: (line) => {
+        add: (line) => save((cart) => {
           const existing = cart.find((l) => l.variantId === line.variantId);
-          save(existing
+          return existing
             ? cart.map((l) => (l.variantId === line.variantId ? { ...l, quantity: Math.min(20, l.quantity + line.quantity) } : l))
-            : [...cart, line]);
-        },
-        setQty: (id, qty) => save(qty <= 0 ? cart.filter((l) => l.variantId !== id) : cart.map((l) => (l.variantId === id ? { ...l, quantity: Math.min(20, qty) } : l))),
-        clear: () => save([]),
+            : [...cart, line];
+        }),
+        setQty: (id, qty) => save((cart) => (qty <= 0 ? cart.filter((l) => l.variantId !== id) : cart.map((l) => (l.variantId === id ? { ...l, quantity: Math.min(20, qty) } : l)))),
+        clear: () => save(() => []),
         currency,
         setCurrency: (c) => {
           setCur(c);
