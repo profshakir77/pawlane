@@ -31,7 +31,16 @@ async function handle(req: Request) {
 
   // Safepay may redirect with only the tracker and no signature; in that case confirm
   // payment by asking Safepay directly.
-  const verified = sig ? verifySafepayRedirect(tracker, sig) : await safepayTrackerIsPaid(tracker);
+  let verified = sig ? verifySafepayRedirect(tracker, sig) : await safepayTrackerIsPaid(tracker);
+  if (!verified && tracker) {
+    // Safepay's webhook usually lands within a second or two of the redirect.
+    // Give it a moment rather than telling a paying customer it failed.
+    for (let i = 0; i < 6 && !verified; i++) {
+      const o = await prisma.order.findFirst({ where: { paymentRef: tracker, paymentProvider: "safepay" }, select: { status: true } });
+      if (o && o.status !== "PENDING" && o.status !== "CANCELLED" && o.status !== "FAILED") verified = true;
+      else await new Promise((r) => setTimeout(r, 1000));
+    }
+  }
   if (!verified) return fail("verify");
 
   // The tracker was created server-side for this exact order total, so a valid
