@@ -94,3 +94,14 @@ export async function sendCheckoutReminder(o: AbandonedForEmail): Promise<boolea
     .join("\n")}\n\nPick up where you left off: ${link}\n\nFree tracked shipping to the USA and Canada, and 30 days to return anything.\nQuestions? Just reply to this email.\n\nThis is a one-time reminder.`;
   return send({ to: o.email, subject: "You left something for your pet", html, text });
 }
+
+// Admin password reset link, sent only to ADMIN_EMAIL.
+export async function sendAdminPasswordReset(to: string, link: string): Promise<boolean> {
+  const html = `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#1F1D1A">
+<h1 style="font-family:Georgia,serif;font-weight:400">Reset your admin password</h1>
+<p>Someone asked to reset the password for the Wrenpaw store admin. If it was you, use the button below. The link works once and expires in 30 minutes.</p>
+<p><a href="${link}" style="display:inline-block;background:#1F1D1A;color:#fff;padding:12px 22px;border-radius:999px;text-decoration:none">Choose a new password</a></p>
+<p>If you didn't ask for this, you can ignore this email. Your password stays the same.</p></div>`;
+  const text = `Reset your Wrenpaw admin password (link works once, expires in 30 minutes):\n${link}\n\nIf you didn't ask for this, ignore this email.`;
+  return send({ to, subject: "Reset your Wrenpaw admin password", html, text });
+}
