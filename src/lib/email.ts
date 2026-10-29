@@ -68,3 +68,29 @@ export async function sendOrderConfirmation(o: OrderForEmail): Promise<boolean> 
     .join("\n")}\nTotal (free tracked shipping): ${formatUsd(o.subtotalCents)}\n\nPacking takes 1 to 3 business days, then most parcels arrive in 7 to 15 business days. Track it at ${SITE_URL}/track\n\nQuestions? Reply to this email or write to ${SUPPORT_EMAIL}.`;
   return send({ to: o.email, subject: `Your Wrenpaw order #${o.number} is confirmed`, html, text });
 }
+
+type AbandonedForEmail = {
+  email: string;
+  name: string | null;
+  items: { title: string; quantity: number; slug: string }[];
+};
+
+// One gentle reminder for someone who filled in checkout but didn't pay.
+export async function sendCheckoutReminder(o: AbandonedForEmail): Promise<boolean> {
+  const first = (o.name ?? "").split(" ")[0] || "there";
+  const link = `${SITE_URL}/products/${o.items[0]?.slug ?? ""}`;
+  const rows = o.items.map((i) => `<li style="padding:4px 0">${esc(i.title)}${i.quantity > 1 ? ` &times; ${i.quantity}` : ""}</li>`).join("");
+  const html = `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#1F1D1A">
+<h1 style="font-family:Georgia,serif;font-weight:400">Still thinking it over, ${esc(first)}?</h1>
+<p>You started an order with us but didn't get to the payment step. Here's what you picked:</p>
+<ul style="padding-left:18px">${rows}</ul>
+<p><a href="${link}" style="display:inline-block;background:#1F1D1A;color:#fff;padding:12px 22px;border-radius:999px;text-decoration:none">Pick up where you left off</a></p>
+<p>Shipping is free with tracking to the USA and Canada, and you have 30 days to return anything that doesn't suit your pet.</p>
+<p>If something went wrong at checkout, or you have a question about sizing, just reply to this email.</p>
+<p>Wrenpaw</p>
+<p style="font-size:12px;color:#8a857d">This is a one-time reminder. We won't email you about this order again.</p></div>`;
+  const text = `Still thinking it over, ${first}?\n\nYou started an order with us but didn't get to the payment step:\n${o.items
+    .map((i) => `- ${i.title}${i.quantity > 1 ? ` x ${i.quantity}` : ""}`)
+    .join("\n")}\n\nPick up where you left off: ${link}\n\nFree tracked shipping to the USA and Canada, and 30 days to return anything.\nQuestions? Just reply to this email.\n\nThis is a one-time reminder.`;
+  return send({ to: o.email, subject: "You left something for your pet", html, text });
+}
