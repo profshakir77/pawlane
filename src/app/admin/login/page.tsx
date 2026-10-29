@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function Login() {
@@ -21,6 +22,7 @@ export default function Login() {
         <input name="password" type="password" className="input" placeholder="Password" required autoComplete="current-password" />
         {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
         <button className="btn-primary w-full">Sign in</button>
+        <Link href="/admin/forgot" className="block text-center text-sm underline">Forgot password?</Link>
       </form>
     </div>
   );
