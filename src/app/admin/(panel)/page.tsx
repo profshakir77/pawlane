@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { formatUsd } from "@/lib/currency";
+import { paymentFeeCents } from "@/lib/fees";
 import { syncNow } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -16,12 +17,12 @@ export default async function Overview() {
   ]);
   const revenue = paid.reduce((s, o) => s + o.subtotalCents, 0);
   const cost = paid.reduce((s, o) => s + o.costCents, 0);
-  // Card processing (Safepay ~2.9%, Stripe ~2.9% + 30c); subtract it for a realistic figure.
-  const fees = Math.round(revenue * 0.029) + paid.length * 30;
+  // Payment processing fees (Safepay percentage, or Stripe 2.9% + 30c), so profit is realistic.
+  const fees = paid.reduce((s, o) => s + paymentFeeCents(o.subtotalCents, o.paymentProvider), 0);
 
   const stats = [
     ["Revenue, last 30 days", formatUsd(revenue)],
-    ["Gross profit after supplier and card fees", formatUsd(revenue - cost - fees)],
+    ["Profit after supplier and payment fees", formatUsd(revenue - cost - fees)],
     ["Orders, last 30 days", String(paid.length)],
     ["Average order", paid.length ? formatUsd(Math.round(revenue / paid.length)) : "-"],
   ];
