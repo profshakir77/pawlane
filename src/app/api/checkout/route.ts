@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { SITE_URL } from "@/lib/seo";
 import { SHIP_COUNTRIES, stripe } from "@/lib/stripe";
+import { bundleDiscountCents } from "@/lib/bundles";
 import { createSafepayTracker, safepayCheckoutUrl, safepayEnabled } from "@/lib/safepay";
 
 const Customer = z.object({
@@ -63,7 +64,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: `${soldOut.v.product.title} (${soldOut.v.name}) has only ${soldOut.v.stock} left.` }, { status: 409 });
   }
 
-  const subtotalCents = lines.reduce((s, l) => s + l.v.priceCents * l.quantity, 0);
+  const itemsCents = lines.reduce((s, l) => s + l.v.priceCents * l.quantity, 0);
+  const discountCents = bundleDiscountCents(lines.map((l) => ({ slug: l.v.product.slug, priceCents: l.v.priceCents, quantity: l.quantity })));
+  const subtotalCents = itemsCents - discountCents;
   const order = await prisma.order.create({
     data: {
       subtotalCents,
@@ -140,7 +143,10 @@ export async function POST(req: Request) {
         delivery_estimate: { minimum: { unit: "business_day", value: 7 }, maximum: { unit: "business_day", value: 15 } },
       },
     }],
-    allow_promotion_codes: true,
+    // Stripe can't combine a fixed discount with promo codes, so bundles use a one-off coupon.
+    ...(discountCents > 0
+      ? { discounts: [{ coupon: (await stripe().coupons.create({ amount_off: discountCents, currency: "usd", duration: "once", name: "Bundle saving", max_redemptions: 1 })).id }] }
+      : { allow_promotion_codes: true }),
     metadata: { orderId: order.id },
     success_url: `${site}/checkout/success?order=${order.number}&v=${(subtotalCents / 100).toFixed(2)}`,
     cancel_url: `${site}/cart`,
