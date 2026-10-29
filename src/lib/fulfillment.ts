@@ -12,6 +12,11 @@ export async function forwardOrder(orderId: string) {
   if (!order) throw new Error("Order not found");
   if (!["PAID", "FAILED", "SENT_TO_SUPPLIER"].includes(order.status)) return order;
   if (!order.shippingAddress) throw new Error("Order has no shipping address");
+  // Never send a test payment to the supplier: it would place (and maybe pay for) a real order.
+  const testPayment =
+    (order.paymentProvider === "safepay" && process.env.SAFEPAY_ENV !== "production") ||
+    (order.paymentProvider === "stripe" && (process.env.STRIPE_SECRET_KEY ?? "").startsWith("sk_test"));
+  if (testPayment) throw new Error("Test payment (sandbox): not sent to supplier");
 
   const shipping = order.shippingAddress as unknown as ShippingAddress;
   const bySupplier = new Map<string, { supplierVariantId: string; quantity: number }[]>();
