@@ -5,6 +5,7 @@ import { Price, useShop } from "@/components/ShopProvider";
 import { SHIP_COUNTRIES } from "@/lib/countries";
 import { track } from "@/lib/track";
 import { PaymentBadges } from "@/components/PaymentBadges";
+import { bundleDiscountCents } from "@/lib/bundles";
 
 const FAIL: Record<string, string> = {
   verify: "We couldn't confirm that payment. If you were charged, email us with your order number and we'll sort it out.",
@@ -16,7 +17,9 @@ export default function CheckoutPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const total = cart.reduce((s, l) => s + l.priceCents * l.quantity, 0);
+  const subtotal = cart.reduce((s, l) => s + l.priceCents * l.quantity, 0);
+  const discount = bundleDiscountCents(cart);
+  const total = subtotal - discount;
   const count = cart.reduce((s, l) => s + l.quantity, 0);
 
   const countries = useMemo(() => {
@@ -111,7 +114,8 @@ export default function CheckoutPage() {
             ))}
           </ul>
           <dl className="mt-6 space-y-3 border-t border-ink/10 pt-5 text-sm">
-            <div className="flex justify-between"><dt className="text-ink/65">Subtotal</dt><dd><Price cents={total} /></dd></div>
+            <div className="flex justify-between"><dt className="text-ink/65">Subtotal</dt><dd><Price cents={subtotal} /></dd></div>
+            {discount > 0 && <div className="flex justify-between text-moss"><dt>Bundle saving</dt><dd>&minus;<Price cents={discount} /></dd></div>}
             <div className="flex justify-between"><dt className="text-ink/65">Shipping</dt><dd className="font-medium text-moss">Free</dd></div>
             <div className="flex justify-between border-t border-ink/10 pt-4 text-lg font-medium"><dt>Total</dt><dd>${(total / 100).toFixed(2)} USD</dd></div>
           </dl>
