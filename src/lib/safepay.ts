@@ -84,9 +84,16 @@ export async function safepayTrackerIsPaid(tracker: string) {
   }
 }
 
-/** Webhook signature: HMAC-SHA512(JSON.stringify(body.data), webhook secret) in x-sfpy-signature. */
-export function verifySafepayWebhook(data: unknown, signature: string | null) {
-  if (!signature || !process.env.SAFEPAY_WEBHOOK_SECRET) return false;
-  const expected = crypto.createHmac("sha512", process.env.SAFEPAY_WEBHOOK_SECRET).update(Buffer.from(JSON.stringify(data))).digest("hex");
-  return safeEqual(expected, signature);
+/**
+ * Webhook signature: HMAC-SHA512 in x-sfpy-signature. The official SDK signs
+ * JSON.stringify(body.data) with the webhook secret; some accounts sign the raw
+ * body or use the API secret, so accept a match on any of those.
+ */
+export function verifySafepayWebhook(data: unknown, signature: string | null, rawBody?: string) {
+  if (!signature) return false;
+  const secrets = [process.env.SAFEPAY_WEBHOOK_SECRET, process.env.SAFEPAY_SECRET_KEY].filter((s): s is string => !!s);
+  const payloads = [JSON.stringify(data), rawBody].filter((p): p is string => !!p);
+  return secrets.some((secret) =>
+    payloads.some((p) => safeEqual(crypto.createHmac("sha512", secret).update(Buffer.from(p)).digest("hex"), signature.toLowerCase())),
+  );
 }
