@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const NAV = [
-  ["/admin", "Overview"], ["/admin/orders", "Orders"], ["/admin/products", "Products"], ["/admin/import", "Find products"],
+  ["/admin", "Overview"], ["/admin/orders", "Orders"], ["/admin/products", "Products"], ["/admin/import", "Find products"], ["/admin/settings", "Settings"],
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
