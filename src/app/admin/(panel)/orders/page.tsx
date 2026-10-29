@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { OrderStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { formatUsd } from "@/lib/currency";
+import { paymentFeeCents, profitCents } from "@/lib/fees";
 import { retryOrder } from "../../actions";
 
 export const dynamic = "force-dynamic";
@@ -63,7 +64,7 @@ export default async function Orders({ searchParams }: { searchParams: { status?
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${BADGE[o.status]}`}>{LABEL[o.status]}</span>
                 {test && <span className="rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-800">Test</span>}
                 <span className="text-sm text-ink/50">{o.createdAt.toISOString().slice(0, 16).replace("T", " ")} UTC</span>
-                <span className="ml-auto text-right text-sm"><b>{formatUsd(o.subtotalCents)}</b> <span className="text-ink/55">profit {formatUsd(o.subtotalCents - o.costCents)}</span></span>
+                <span className="ml-auto text-right text-sm"><b>{formatUsd(o.subtotalCents)}</b> <span className="text-ink/55">fee {formatUsd(paymentFeeCents(o.subtotalCents, o.paymentProvider))} &middot; profit {formatUsd(profitCents(o))}</span></span>
               </header>
 
               <div className="mt-4 grid gap-4 text-sm md:grid-cols-3">
