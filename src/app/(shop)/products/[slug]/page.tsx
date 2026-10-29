@@ -4,6 +4,8 @@ import { AddToCart } from "@/components/AddToCart";
 import { ProductCard, toCard } from "@/components/ProductCard";
 import { ProductGallery } from "@/components/ProductGallery";
 import { TrustBar } from "@/components/TrustBar";
+import { BundleOffer } from "@/components/BundleOffer";
+import { bundleForSlug } from "@/lib/bundles";
 import { GUIDES } from "@/content/guides";
 import { prisma } from "@/lib/db";
 import { JsonLd, breadcrumbLd, categorySlug, productLd } from "@/lib/seo";
@@ -45,6 +47,23 @@ export default async function ProductPage({ params }: { params: { slug: string }
     related = [...related, ...more];
   }
   const guide = GUIDES.find((g) => g.category === p.category);
+
+  // Bundle offer: only shown when every product in the set is live and has stock.
+  const bundle = bundleForSlug(p.slug);
+  let bundleItems: { slug: string; title: string; image?: string; variantId: string; variantName: string; priceCents: number }[] = [];
+  if (bundle) {
+    const members = await prisma.product.findMany({
+      where: { slug: { in: bundle.slugs }, active: true },
+      include: { variants: { where: { stock: { gt: 0 } }, orderBy: { priceCents: "asc" }, take: 1 } },
+    });
+    const ordered = bundle.slugs.map((s) => members.find((m) => m.slug === s));
+    if (ordered.every((m) => m && m.variants[0])) {
+      bundleItems = ordered.map((m) => ({
+        slug: m!.slug, title: m!.title, image: m!.variants[0].image ?? m!.images[0],
+        variantId: m!.variants[0].id, variantName: m!.variants[0].name, priceCents: m!.variants[0].priceCents,
+      }));
+    }
+  }
   const catPath = `/category/${categorySlug(p.category)}`;
 
   const details = [
@@ -100,6 +119,8 @@ export default async function ProductPage({ params }: { params: { slug: string }
                 </details>
               ))}
             </div>
+
+            {bundle && bundleItems.length > 0 && <BundleOffer name={bundle.name} blurb={bundle.blurb} items={bundleItems} />}
 
             {guide && (
               <Link href={`/guides/${guide.slug}`} className="group mt-8 flex items-center justify-between gap-4 rounded-lg border border-line p-5 transition hover:border-ink">
