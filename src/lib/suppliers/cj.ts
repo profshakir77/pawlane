@@ -3,6 +3,8 @@ import {
   SupplierAdapter, SupplierProduct, SupplierSummary, TrackingInfo, trackingUrl,
 } from "./types";
 
+const COUNTRY_NAMES: Record<string, string> = { US: "United States", CA: "Canada", GB: "United Kingdom", AU: "Australia", PK: "Pakistan" };
+
 // CJ Dropshipping API v2. Field names follow CJ's public docs; check
 // https://developers.cjdropshipping.com when CJ updates their API.
 const BASE = "https://developers.cjdropshipping.com/api2.0/v1";
@@ -143,6 +145,8 @@ export const cjAdapter: SupplierAdapter = {
       method: "POST",
       body: JSON.stringify({
         orderNumber: reference,
+        // CJ needs the country name as well as the code.
+        shippingCountry: COUNTRY_NAMES[shipping.countryCode] ?? shipping.countryCode,
         shippingCountryCode: shipping.countryCode,
         shippingProvince: shipping.state ?? "",
         shippingCity: shipping.city,
