@@ -3,7 +3,7 @@ import type { OrderStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { formatUsd } from "@/lib/currency";
 import { paymentFeeCents, profitCents } from "@/lib/fees";
-import { retryOrder } from "../../actions";
+import { deleteOrder, retryOrder } from "../../actions";
 
 export const dynamic = "force-dynamic";
 const STATUSES: OrderStatus[] = ["PAID", "SENT_TO_SUPPLIER", "SHIPPED", "DELIVERED", "FAILED", "PENDING", "CANCELLED"];
@@ -99,6 +99,12 @@ export default async function Orders({ searchParams }: { searchParams: { status?
               {(o.status === "PAID" || o.status === "FAILED") && !test && (
                 <form action={retryOrder.bind(null, o.id)} className="mt-3">
                   <button className="rounded-full bg-ink px-4 py-1.5 text-xs text-paper">Send to supplier</button>
+                </form>
+              )}
+
+              {o.fulfillments.length === 0 && ["PENDING", "FAILED", "CANCELLED"].includes(o.status) && (test || o.status !== "FAILED") && (
+                <form action={deleteOrder.bind(null, o.id)} className="mt-3">
+                  <button className="rounded-full border border-red-300 px-4 py-1.5 text-xs text-red-700 hover:bg-red-50">Delete order</button>
                 </form>
               )}
             </article>
