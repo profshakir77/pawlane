@@ -19,7 +19,10 @@ export const metadata: Metadata = {
   openGraph: { type: "website", siteName: name, description, locale: "en_US" },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1 } },
-  verification: { google: process.env.GOOGLE_SITE_VERIFICATION, other: process.env.FACEBOOK_DOMAIN_VERIFICATION ? { "facebook-domain-verification": process.env.FACEBOOK_DOMAIN_VERIFICATION } : undefined },
+  verification: { google: process.env.GOOGLE_SITE_VERIFICATION, other: {
+    ...(process.env.FACEBOOK_DOMAIN_VERIFICATION ? { "facebook-domain-verification": process.env.FACEBOOK_DOMAIN_VERIFICATION } : {}),
+    ...(process.env.PINTEREST_DOMAIN_VERIFY ? { "p:domain_verify": process.env.PINTEREST_DOMAIN_VERIFY } : {}),
+  } },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
