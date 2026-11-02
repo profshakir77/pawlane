@@ -21,6 +21,7 @@ model Product {
   seoTitle          String?
   seoDescription    String?
   variants          Variant[]
+  reviews           Review[]
   lastSyncedAt      DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
@@ -114,4 +115,18 @@ model SyncLog {
 model Setting {
   key   String @id
   value String
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  rating    Int
+  body      String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([productId, approved])
 }
