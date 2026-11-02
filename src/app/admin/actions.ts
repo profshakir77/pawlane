@@ -34,6 +34,17 @@ export async function retryOrder(id: string) {
   revalidatePath("/admin/orders"); revalidatePath("/admin");
 }
 
+export async function deleteOrder(id: string) {
+  await requireAdmin();
+  const o = await prisma.order.findUniqueOrThrow({ where: { id }, include: { fulfillments: true } });
+  // Never delete an order a supplier is already working on.
+  if (o.fulfillments.length > 0 || ["SENT_TO_SUPPLIER", "SHIPPED", "DELIVERED"].includes(o.status)) {
+    throw new Error("This order already reached the supplier and cannot be deleted.");
+  }
+  await prisma.order.delete({ where: { id } });
+  revalidatePath("/admin/orders"); revalidatePath("/admin");
+}
+
 export async function syncNow() {
   await requireAdmin();
   await runAllSyncs();
