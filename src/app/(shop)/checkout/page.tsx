@@ -6,6 +6,7 @@ import { SHIP_COUNTRIES } from "@/lib/countries";
 import { track } from "@/lib/track";
 import { PaymentBadges } from "@/components/PaymentBadges";
 import { bundleDiscountCents } from "@/lib/bundles";
+import { normalizePromo, promoDiscountCents } from "@/lib/promo";
 
 const FAIL: Record<string, string> = {
   verify: "We couldn't confirm that payment. If you were charged, email us with your order number and we'll sort it out.",
@@ -19,7 +20,16 @@ export default function CheckoutPage() {
   const [notice, setNotice] = useState("");
   const subtotal = cart.reduce((s, l) => s + l.priceCents * l.quantity, 0);
   const discount = bundleDiscountCents(cart);
-  const total = subtotal - discount;
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<string | null>(null);
+  const [promoMsg, setPromoMsg] = useState("");
+  const promoCents = promoDiscountCents(promo, subtotal - discount);
+  const total = subtotal - discount - promoCents;
+  function applyPromo(code: string) {
+    const c = normalizePromo(code);
+    setPromo(c);
+    setPromoMsg(c ? `${c} applied` : code.trim() ? "That code isn't valid." : "");
+  }
   const count = cart.reduce((s, l) => s + l.quantity, 0);
 
   const countries = useMemo(() => {
@@ -31,6 +41,8 @@ export default function CheckoutPage() {
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     if (q.get("cancelled")) setNotice("Payment was cancelled. Your cart is saved, you can try again whenever you're ready.");
+    const code = q.get("code");
+    if (code) { setPromoInput(code); applyPromo(code); }
     const f = q.get("failed");
     if (f) setError(FAIL[f] ?? "Something went wrong with the payment. Please try again.");
   }, []);
@@ -43,7 +55,7 @@ export default function CheckoutPage() {
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: cart.map((l) => ({ variantId: l.variantId, quantity: l.quantity })), customer: f }),
+      body: JSON.stringify({ items: cart.map((l) => ({ variantId: l.variantId, quantity: l.quantity })), customer: f, promoCode: promo ?? undefined }),
     });
     const json = await res.json().catch(() => ({}));
     if (json.url) window.location.href = json.url;
@@ -113,9 +125,15 @@ export default function CheckoutPage() {
               </li>
             ))}
           </ul>
+          <div className="mt-6 flex gap-2">
+            <input value={promoInput} onChange={(e) => setPromoInput(e.target.value)} placeholder="Discount code" aria-label="Discount code" className="input flex-1 uppercase" />
+            <button type="button" onClick={() => applyPromo(promoInput)} className="rounded-md border border-ink px-4 text-sm font-medium">Apply</button>
+          </div>
+          {promoMsg && <p className={`mt-2 text-xs ${promo ? "text-moss" : "text-clay"}`}>{promoMsg}</p>}
           <dl className="mt-6 space-y-3 border-t border-ink/10 pt-5 text-sm">
             <div className="flex justify-between"><dt className="text-ink/65">Subtotal</dt><dd><Price cents={subtotal} /></dd></div>
             {discount > 0 && <div className="flex justify-between text-moss"><dt>Bundle saving</dt><dd>&minus;<Price cents={discount} /></dd></div>}
+            {promoCents > 0 && <div className="flex justify-between text-moss"><dt>Code {promo}</dt><dd>&minus;<Price cents={promoCents} /></dd></div>}
             <div className="flex justify-between"><dt className="text-ink/65">Shipping</dt><dd className="font-medium text-moss">Free</dd></div>
             <div className="flex justify-between border-t border-ink/10 pt-4 text-lg font-medium"><dt>Total</dt><dd>${(total / 100).toFixed(2)} USD</dd></div>
           </dl>
