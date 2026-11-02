@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { SITE_URL } from "@/lib/seo";
 import { SHIP_COUNTRIES, stripe } from "@/lib/stripe";
 import { bundleDiscountCents } from "@/lib/bundles";
+import { normalizePromo, promoDiscountCents } from "@/lib/promo";
 import { createSafepayTracker, safepayCheckoutUrl, safepayEnabled } from "@/lib/safepay";
 
 const Customer = z.object({
@@ -21,6 +22,7 @@ const Customer = z.object({
 const Body = z.object({
   items: z.array(z.object({ variantId: z.string(), quantity: z.number().int().min(1).max(20) })).min(1).max(30),
   customer: Customer.optional(),
+  promoCode: z.string().max(40).optional(),
 });
 
 // Which gateway takes the money. Safepay settles to a Pakistani bank account;
@@ -65,7 +67,9 @@ export async function POST(req: Request) {
   }
 
   const itemsCents = lines.reduce((s, l) => s + l.v.priceCents * l.quantity, 0);
-  const discountCents = bundleDiscountCents(lines.map((l) => ({ slug: l.v.product.slug, priceCents: l.v.priceCents, quantity: l.quantity })));
+  const bundleCents = bundleDiscountCents(lines.map((l) => ({ slug: l.v.product.slug, priceCents: l.v.priceCents, quantity: l.quantity })));
+  const promo = normalizePromo(parsed.data.promoCode);
+  const discountCents = bundleCents + promoDiscountCents(promo, itemsCents - bundleCents);
   const subtotalCents = itemsCents - discountCents;
   const order = await prisma.order.create({
     data: {
@@ -145,7 +149,7 @@ export async function POST(req: Request) {
     }],
     // Stripe can't combine a fixed discount with promo codes, so bundles use a one-off coupon.
     ...(discountCents > 0
-      ? { discounts: [{ coupon: (await stripe().coupons.create({ amount_off: discountCents, currency: "usd", duration: "once", name: "Bundle saving", max_redemptions: 1 })).id }] }
+      ? { discounts: [{ coupon: (await stripe().coupons.create({ amount_off: discountCents, currency: "usd", duration: "once", name: promo ? (bundleCents > 0 ? `Bundle + ${promo}` : promo) : "Bundle saving", max_redemptions: 1 })).id }] }
       : { allow_promotion_codes: true }),
     metadata: { orderId: order.id },
     success_url: `${site}/checkout/success?order=${order.number}&v=${(subtotalCents / 100).toFixed(2)}`,
