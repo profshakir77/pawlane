@@ -4,6 +4,7 @@ import { AddToCart } from "@/components/AddToCart";
 import { ProductCard, toCard } from "@/components/ProductCard";
 import { ProductGallery } from "@/components/ProductGallery";
 import { TrustBar } from "@/components/TrustBar";
+import { Reviews } from "@/components/Reviews";
 import { BundleOffer } from "@/components/BundleOffer";
 import { bundleForSlug } from "@/lib/bundles";
 import { GUIDES } from "@/content/guides";
@@ -66,6 +67,14 @@ export default async function ProductPage({ params }: { params: { slug: string }
   }
   const catPath = `/category/${categorySlug(p.category)}`;
 
+  // Delivery estimate: 7 to 15 business days from today.
+  const addBusinessDays = (n: number) => {
+    const d = new Date();
+    while (n > 0) { d.setDate(d.getDate() + 1); if (d.getDay() !== 0 && d.getDay() !== 6) n--; }
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  };
+  const arrives = `${addBusinessDays(7)} and ${addBusinessDays(15)}`;
+
   const details = [
     { t: "Shipping", d: "Free tracked shipping to the USA and Canada. Most parcels arrive in 7 to 15 business days. You'll get a tracking link by email." },
     { t: "Returns", d: "If it doesn't suit your pet, you have 30 days from delivery to send it back for a refund.", link: { href: "/shipping-returns", label: "How returns work" } },
@@ -94,6 +103,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
               <AddToCart product={{ title: p.title, slug: p.slug, image: p.images[0] }}
                 variants={p.variants.map((v) => ({ id: v.id, name: v.name, priceCents: v.priceCents, compareAtCents: v.compareAtCents, stock: v.stock, image: v.image }))} />
             </div>
+
+            <p className="mt-4 text-sm text-ink/75">
+              <span className="font-semibold text-ink">Free tracked shipping.</span> Ships in 1 to 3 days, arrives between {arrives} (USA &amp; Canada).
+            </p>
 
             <ul className="mt-8 grid grid-cols-3 gap-2 text-center text-[11px] leading-tight text-ink/70">
               <li className="rounded-md bg-meadow px-2 py-3"><span className="block font-semibold text-ink">Free</span>shipping</li>
@@ -134,6 +147,8 @@ export default async function ProductPage({ params }: { params: { slug: string }
           </div>
         </div>
       </div>
+
+      <Reviews productId={p.id} slug={p.slug} />
 
       <TrustBar />
 
