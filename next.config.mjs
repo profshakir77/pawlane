@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
+  // Lets /_next/image resize supplier photos (used for social images).
+  images: { remotePatterns: [{ protocol: "https", hostname: "cf.cjdropshipping.com" }, { protocol: "https", hostname: "oss-cf.cjdropshipping.com" }] },
   // Old demo product pages (linked from early social posts) now point to the
   // real products that replaced them.
   async redirects() {
