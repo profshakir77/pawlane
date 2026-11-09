@@ -41,6 +41,10 @@ export function breadcrumbLd(items: { name: string; path: string }[]) {
   };
 }
 
+// Google rejects SKUs with spaces or odd characters.
+const cleanSku = (s?: string) =>
+  s ? s.trim().replace(/\s+/g, "-").replace(/[^A-Za-z0-9._-]/g, "") : undefined;
+
 type LdVariant = { sku: string; name: string; priceCents: number; stock: number; image: string | null };
 export function productLd(p: { title: string; description: string; slug: string; images: string[]; category: string; variants: LdVariant[] }) {
   const url = abs(`/products/${p.slug}`);
@@ -54,10 +58,10 @@ export function productLd(p: { title: string; description: string; slug: string;
     url,
     category: p.category,
     brand: { "@type": "Brand", name: STORE_NAME },
-    sku: p.variants[0]?.sku,
+    sku: cleanSku(p.variants[0]?.sku),
     offers: p.variants.map((v) => ({
       "@type": "Offer",
-      sku: v.sku,
+      sku: cleanSku(v.sku),
       name: v.name,
       url,
       price: (v.priceCents / 100).toFixed(2),
