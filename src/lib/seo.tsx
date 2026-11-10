@@ -85,7 +85,7 @@ export function productLd(p: { title: string; description: string; slug: string;
         returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
         merchantReturnDays: 30,
         returnMethod: "https://schema.org/ReturnByMail",
-        returnFees: "https://schema.org/ReturnShippingFees",
+        returnFees: "https://schema.org/ReturnFeesCustomerResponsibility",
       },
     })),
   };
