@@ -13,7 +13,7 @@ const description = "Dog and cat beds, lick mats, brushes, harnesses and water f
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: `${name}: Pet Supplies with Free US & Canada Shipping`, template: `%s | ${name}` },
+  title: { default: `${name} Pet Store: Dog & Cat Supplies with Free US & Canada Shipping`, template: `%s | ${name}` },
   description,
   alternates: { canonical: "/" },
   openGraph: { type: "website", siteName: name, description, locale: "en_US" },
