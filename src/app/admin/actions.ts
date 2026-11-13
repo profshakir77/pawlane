@@ -55,9 +55,15 @@ export async function setSeo(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("productId"));
   const clean = (k: string) => String(formData.get(k) ?? "").trim() || null;
+  const rawSlug = clean("slug");
+  const slug = rawSlug ? rawSlug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : undefined;
+  if (slug) {
+    const taken = await prisma.product.findFirst({ where: { slug, NOT: { id } }, select: { id: true } });
+    if (taken) throw new Error(`The URL "${slug}" is already used by another product.`);
+  }
   await prisma.product.update({
     where: { id },
-    data: { title: clean("title") ?? undefined, seoTitle: clean("seoTitle"), seoDescription: clean("seoDescription"), description: clean("description") ?? undefined },
+    data: { slug: slug || undefined, title: clean("title") ?? undefined, seoTitle: clean("seoTitle"), seoDescription: clean("seoDescription"), description: clean("description") ?? undefined },
   });
   revalidatePath("/admin/products"); revalidatePath("/", "layout");
 }
