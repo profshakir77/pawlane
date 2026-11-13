@@ -1,3 +1,5 @@
+import { slugRenames } from "./slug-renames.mjs";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
@@ -8,13 +10,14 @@ const nextConfig = {
   async redirects() {
     const p = (from, to) => ({ source: `/products/${from}`, destination: to, permanent: true });
     return [
-      p("4-colors-gravity-pet-feeder-water-dispenser-cute-cat-shaped--957121", "/products/automatic-drinking-fountain-cat-water-drinking-bowl-cat-wate-2c31fc"),
+      p("4-colors-gravity-pet-feeder-water-dispenser-cute-cat-shaped--957121", "/products/quiet-cat-water-fountain"),
       p("filtered-water-fountain-2-5l-ck-006", "/products/pet-cat-dog-stainless-steel-automatic-circulation-water-disp-146240"),
-      p("lick-mat-slow-feeder-ck-002", "/products/dog-pets-puzzle-toys-slow-feeder-interactive-increase-puppy--011392"),
+      p("lick-mat-slow-feeder-ck-002", "/products/dog-puzzle-feeder-toy"),
       p("self-cleaning-slicker-brush-ck-003", "/products/self-cleaning-slicker-brush-for-dogs-cats-pets-one-click-cle-025856"),
       p("interactive-feather-wand-for-cats-ck-004", "/products/cat-teaser-stick-retractable-cat-wand-with-replacement-head--156352"),
-      p("self-warming-calming-donut-bed-ck-001", "/products/dog-bed-538496"),
+      p("self-warming-calming-donut-bed-ck-001", "/products/calming-dog-bed"),
       p("no-pull-reflective-harness-ck-005", "/category/walking"),
+      ...Object.entries(slugRenames).map(([from, to]) => p(from, `/products/${to}`)),
     ];
   },
 };
