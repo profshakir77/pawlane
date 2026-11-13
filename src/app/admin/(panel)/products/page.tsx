@@ -53,6 +53,7 @@ export default async function Products() {
               <summary className="cursor-pointer text-sm font-semibold">Edit title, description and search snippet</summary>
               <form action={setSeo} className="mt-3 grid gap-3 text-sm">
                 <input type="hidden" name="productId" value={p.id} />
+                <label>URL slug (wrenpaw.com/products/…, add the old one to slug-renames.mjs so it redirects)<input name="slug" defaultValue={p.slug} pattern="[a-z0-9-]+" className="input mt-1" /></label>
                 <label>Product name<input name="title" defaultValue={p.title} className="input mt-1" /></label>
                 <label>Search title (Google shows about 60 characters)<input name="seoTitle" defaultValue={p.seoTitle ?? ""} maxLength={70} placeholder={p.title} className="input mt-1" /></label>
                 <label>Search description (about 155 characters)<textarea name="seoDescription" defaultValue={p.seoDescription ?? ""} maxLength={170} rows={2} className="input mt-1" /></label>
