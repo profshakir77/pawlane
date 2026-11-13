@@ -12,7 +12,7 @@ export const BUNDLES: Bundle[] = [
     blurb: "Somewhere to scratch, fresh running water and a toy for play time.",
     slugs: [
       "cat-scratcher-sisal-mat-board-396672",
-      "cat-automatic-water-dispenser-flow-mute-circulating-filter-c-604900",
+      "compact-cat-water-fountain",
       "cat-teaser-stick-retractable-cat-wand-with-replacement-head--156352",
     ],
   },
@@ -21,7 +21,7 @@ export const BUNDLES: Bundle[] = [
     name: "Dog road trip kit",
     blurb: "Keeps the car clean, the dog dry and the fur off your clothes.",
     slugs: [
-      "car-pet-mat-car-dog-mat-car-rear-waterproof-pet-dog-mat-pet--492352",
+      "waterproof-dog-car-seat-cover",
       "transparent-waterproof-rainbow-dog-raincoat-619700",
       "sticky-hair-roller-high-viscosity-strong-roller-tear-type-re-690752",
     ],
@@ -32,8 +32,8 @@ export const BUNDLES: Bundle[] = [
     blurb: "A raised stand, a slow feeder and a puzzle game for dogs who eat too fast.",
     slugs: [
       "adjustable-lifting-dog-bowl-food-basin-integrated-609100",
-      "pet-dog-cat-slow-feeder-bowls-anti-choking-slow-feeder-dish--969984",
-      "dog-pets-puzzle-toys-slow-feeder-interactive-increase-puppy--011392",
+      "slow-feeder-dog-bowl",
+      "dog-puzzle-feeder-toy",
     ],
   },
 ];
